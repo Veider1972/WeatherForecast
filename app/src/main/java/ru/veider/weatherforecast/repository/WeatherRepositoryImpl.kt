@@ -3,7 +3,7 @@ package ru.veider.weatherforecast.repository
 import ru.veider.weatherforecast.data.WeatherData
 import ru.veider.weatherforecast.data.testWeatherData
 
-class WeatherRepositoryImpl:WeatherRepository {
+class WeatherRepositoryImpl : WeatherRepository {
     override fun getWeatherFromServer(): WeatherData {
         return testWeatherData()
     }

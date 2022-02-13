@@ -1,18 +1,53 @@
 package ru.veider.weatherforecast.data
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+
+@Parcelize
 data class WeatherQuery(
-    val latitude: Double, val longitude: Double, val language: Language,
+    var name: String, var latitude: Double, var longitude: Double, var language: Language,
     val key: String = "b5eedce9-6c9a-44aa-8019-e78fa1b018e7" // ключ разработчика
-) {
+) : Parcelable {
     constructor(
-        latitude: Double, longitude: Double, language: String
+        name: String, latitude: Double, longitude: Double, language: String
     ) : this(
-        latitude, longitude, Language.valueOf(language)
+        name, latitude, longitude, Language.fromString(language)
     )
 }
 
-fun testWeatherQuery(): WeatherQuery {
-    return WeatherQuery(55.833333, 37.616667, "ru_RU")
+enum class DataLoading {
+    RUSSIAN, FOREIGN
+}
+
+fun getRussianCities(): Array<WeatherQuery> {
+    return arrayOf(
+        WeatherQuery("Москва", 55.755826, 37.617299900000035, "ru_RU"),
+        WeatherQuery("Санкт-Петербург", 59.9342802, 30.335098600000038, "ru_RU"),
+        WeatherQuery("Новосибирск", 55.00835259999999, 82.93573270000002, "ru_RU"),
+        WeatherQuery("Екатеринбург", 56.83892609999999, 60.60570250000001, "ru_RU"),
+        WeatherQuery("Нижний Новгород", 56.2965039, 43.936059, "ru_RU"),
+        WeatherQuery("Казань", 55.8304307, 49.06608060000008, "ru_RU"),
+        WeatherQuery("Челябинск", 55.1644419, 61.4368432, "ru_RU"),
+        WeatherQuery("Омск", 54.9884804, 73.32423610000001, "ru_RU"),
+        WeatherQuery("Ростов-на-Дону", 47.2357137, 39.701505, "ru_RU"),
+        WeatherQuery("Уфа", 54.7387621, 55.972055400000045, "ru_RU")
+    )
+}
+
+fun getForeignCities(): Array<WeatherQuery> {
+    return arrayOf(
+        WeatherQuery("Лондон", 51.5085300, -0.1257400, "ru_RU"),
+        WeatherQuery("Токио", 35.6895000, 139.6917100, "ru_RU"),
+        WeatherQuery("Париж", 48.8534100, 2.3488000, "ru_RU"),
+        WeatherQuery("Берлин", 52.52000659999999, 13.404953999999975, "ru_RU"),
+        WeatherQuery("Рим", 41.9027835, 12.496365500000024, "ru_RU"),
+        WeatherQuery("Минск", 53.90453979999999, 27.561524400000053, "ru_RU"),
+        WeatherQuery("Стамбул", 41.0082376, 28.97835889999999, "ru_RU"),
+        WeatherQuery("Вашингтон", 38.9071923, -77.03687070000001, "ru_RU"),
+        WeatherQuery("Киев", 50.4501, 30.523400000000038, "ru_RU"),
+        WeatherQuery("Пекин", 39.90419989999999, 116.40739630000007, "ru_RU")
+    )
 }
 
 data class WeatherData(
@@ -102,12 +137,12 @@ fun testFact(): Fact {
 data class Forecast(
     val date: String,            // Дата прогноза в формате ГГГГ-ММ-ДД. Строка
     val date_ts: Long,           // Дата прогноза в формате Unixtime. Число
-    val week: Int,               // Порядковый номер недели.	Число
+    val week: Int,               // Порядковый номер недели. Число
     val sunrise: String,         // Время восхода Солнца, локальное время (может отсутствовать для полярных регионов). Строка
     val sunset: String,          // Время заката Солнца, локальное время (может отсутствовать для полярных регионов). Строка
-    val moon_code: Int,     // Код фазы Луны.
+    val moon_code: Int,          // Код фазы Луны.
     val moon_text: MoonText,     // Текстовый код для фазы Луны.
-    var parts: Array<Parts>     // Прогнозы по времени суток
+    val parts: Array<Parts>      // Прогнозы по времени суток
 ) {
     constructor(
         date: String, date_ts: Long, week: Int, sunrise: String, sunset: String, moon_code: Int,
@@ -129,24 +164,24 @@ fun testForecast(): Forecast {
 }
 
 data class Parts(
-    val part_name: PartName,    // Название времени суток
+    val part_name: PartName,     // Название времени суток
     val temp_min: Int,           // Минимальная температура для времени суток (°C). Число
     val temp_max: Int,           // Максимальная температура для времени суток (°C). Число
     val temp_avg: Int,           // Средняя температура для времени суток (°C). Число
-    val feels_like: Int,        // Ощущаемая температура (°C). Число
-    val icon: String,           // Код иконки погоды https://yastatic.net/weather/i/icons/funky/dark/<значение поля icon>.svg. Строка
+    val feels_like: Int,         // Ощущаемая температура (°C). Число
+    val icon: String,            // Код иконки погоды https://yastatic.net/weather/i/icons/funky/dark/<значение поля icon>.svg. Строка
     val condition: Condition,    // Код расшифровки погодного описания
     val daytime: DayTime,        // Светлое или темное время суток
     val polar: Boolean,          // Признак того, что время суток, указанное в поле daytime, является полярным.	Логический
-    val wind_speed: Double,         // Скорость ветра (в м/с). Число
-    val wind_gust: Double,          // Скорость порывов ветра (в м/с). Число
+    val wind_speed: Double,      // Скорость ветра (в м/с). Число
+    val wind_gust: Double,       // Скорость порывов ветра (в м/с). Число
     val wind_dir: WindDir,       // Направление ветра
     val pressure_mm: Int,        // Давление (в мм рт. ст.). Число
     val pressure_pa: Int,        // Давление (в гектопаскалях). Число
     val humidity: Int,           // Влажность воздуха (в процентах). Число
     val prec_mm: Int,            // Прогнозируемое количество осадков (в мм). Число
     val prec_period: Int,        // Прогнозируемый период осадков (в минутах).	Число
-    val prec_prob: Int,           // Вероятность выпадения осадков. Число
+    val prec_prob: Int,          // Вероятность выпадения осадков. Число
 ) {
     constructor(
         part_name: String, temp_min: Int, temp_max: Int, temp_avg: Int, feels_like: Int,
@@ -198,6 +233,7 @@ fun testParts(partName: String): Parts {
     )
 }
 
+//@Parcelize
 enum class Language(val str: String) {
     RU("ru_RU"),     // русский язык для домена России.
     UA_RU("ru_UA"),  // русский язык для домена Украины.
@@ -209,16 +245,16 @@ enum class Language(val str: String) {
 
     companion object {
         fun fromString(str: String): Language {
-            when (str) {
-                "ru_RU" -> return RU
-                "ru_UA" -> return UA_RU
-                "uk_UA" -> return UA_UK
-                "be_BY" -> return BY
-                "kk_KZ" -> return KZ
-                "tr_TR" -> return TR
-                "en_US" -> return US
+            return when (str) {
+                "ru_RU" -> RU
+                "ru_UA" -> UA_RU
+                "uk_UA" -> UA_UK
+                "be_BY" -> BY
+                "kk_KZ" -> KZ
+                "tr_TR" -> TR
+                "en_US" -> US
+                else -> RU
             }
-            return US
         }
     }
 }
@@ -381,28 +417,28 @@ enum class Condition(val str: String) {
 
     companion object {
         fun fromString(str: String): Condition {
-            when (str) {
-                "clear" -> return CLEAR
-                "partly-cloudy" -> return PARTLY_CLOUDY
-                "cloudy" -> return CLOUDY
-                "overcast" -> return OVERCAST
-                "drizzle" -> return DRIZZLE
-                "light-rain" -> return LIGHT_RAIN
-                "rain" -> return RAIN
-                "moderate-rain" -> return MODERATE_RAIN
-                "heavy-rain" -> return HEAVY_RAIN
-                "continuous-heavy-rain" -> return CONTINUOUS_HEAVY_RAIN
-                "showers" -> return SHOWERS
-                "wet-snow" -> return WET_SNOW
-                "light-snow" -> return LIGHT_SNOW
-                "snow" -> return SNOW
-                "snow-showers" -> return SNOW_SHOWERS
-                "hail" -> return HAIL
-                "thunderstorm" -> return THUNDERSTORM
-                "thunderstorm-with-rain" -> return THUNDERSTORM_WITH_RAIN
-                "thunderstorm-with-hail" -> return THUNDERSTORM_WITH_HAIL
+            return when (str) {
+                "clear" -> CLEAR
+                "partly-cloudy" -> PARTLY_CLOUDY
+                "cloudy" -> CLOUDY
+                "overcast" -> OVERCAST
+                "drizzle" -> DRIZZLE
+                "light-rain" -> LIGHT_RAIN
+                "rain" -> RAIN
+                "moderate-rain" -> MODERATE_RAIN
+                "heavy-rain" -> HEAVY_RAIN
+                "continuous-heavy-rain" -> CONTINUOUS_HEAVY_RAIN
+                "showers" -> SHOWERS
+                "wet-snow" -> WET_SNOW
+                "light-snow" -> LIGHT_SNOW
+                "snow" -> SNOW
+                "snow-showers" -> SNOW_SHOWERS
+                "hail" -> HAIL
+                "thunderstorm" -> THUNDERSTORM
+                "thunderstorm-with-rain" -> THUNDERSTORM_WITH_RAIN
+                "thunderstorm-with-hail" -> THUNDERSTORM_WITH_HAIL
+                else -> CLEAR
             }
-            return CLEAR
         }
     }
 }
@@ -458,20 +494,19 @@ enum class WindDir(val str: String) {
 
     companion object {
         fun fromString(str: String): WindDir {
-            when (str) {
-                "nw" -> return NORD_WEST
-                "n" -> return NORD
-                "ne" -> return NORD_EAST
-                "e" -> return EAST
-                "se" -> return SOUTH_EAST
-                "s" -> return SOUTH
-                "sw" -> return SOUTH_WEST
-                "w" -> return WEST
-                "c" -> return CALM
+            return when (str) {
+                "nw" -> NORD_WEST
+                "n" -> NORD
+                "ne" -> NORD_EAST
+                "e" -> EAST
+                "se" -> SOUTH_EAST
+                "s" -> SOUTH
+                "sw" -> SOUTH_WEST
+                "w" -> WEST
+                "c" -> CALM
+                else -> CALM
             }
-            return CALM
         }
-
     }
 }
 
@@ -481,11 +516,11 @@ enum class DayTime(val str: String) {
 
     companion object {
         fun fromString(str: String): DayTime {
-            when (str) {
-                "d" -> return DAY
-                "n" -> return NIGHT
+            return when (str) {
+                "d" -> DAY
+                "n" -> NIGHT
+                else -> DAY
             }
-            return DAY
         }
     }
 }
@@ -498,13 +533,13 @@ enum class Season(val str: String) {
 
     companion object {
         fun fromString(str: String): Season {
-            when (str) {
-                "summer" -> return SUMMER
-                "autumn" -> return AUTUMN
-                "winter" -> return WINTER
-                "spring" -> return SPRING
+            return when (str) {
+                "summer" -> SUMMER
+                "autumn" -> AUTUMN
+                "winter" -> WINTER
+                "spring" -> SPRING
+                else -> SUMMER
             }
-            return SUMMER
         }
     }
 }
@@ -596,46 +631,62 @@ enum class MoonText(val str: String) {
 
     companion object {
         fun fromString(str: String): MoonText {
-            when (str) {
-                "moon-code-0" -> return MOON_CODE_0
-                "moon-code-1" -> return MOON_CODE_1
-                "moon-code-2" -> return MOON_CODE_2
-                "moon-code-3" -> return MOON_CODE_3
-                "moon-code-4" -> return MOON_CODE_4
-                "moon-code-5" -> return MOON_CODE_5
-                "moon-code-6" -> return MOON_CODE_6
-                "moon-code-7" -> return MOON_CODE_7
-                "moon-code-8" -> return MOON_CODE_8
-                "moon-code-9" -> return MOON_CODE_9
-                "moon-code-10" -> return MOON_CODE_10
-                "moon-code-11" -> return MOON_CODE_11
-                "moon-code-12" -> return MOON_CODE_12
-                "moon-code-13" -> return MOON_CODE_13
-                "moon-code-14" -> return MOON_CODE_14
-                "moon-code-15" -> return MOON_CODE_15
+            return when (str) {
+                "moon-code-0" -> MOON_CODE_0
+                "moon-code-1" -> MOON_CODE_1
+                "moon-code-2" -> MOON_CODE_2
+                "moon-code-3" -> MOON_CODE_3
+                "moon-code-4" -> MOON_CODE_4
+                "moon-code-5" -> MOON_CODE_5
+                "moon-code-6" -> MOON_CODE_6
+                "moon-code-7" -> MOON_CODE_7
+                "moon-code-8" -> MOON_CODE_8
+                "moon-code-9" -> MOON_CODE_9
+                "moon-code-10" -> MOON_CODE_10
+                "moon-code-11" -> MOON_CODE_11
+                "moon-code-12" -> MOON_CODE_12
+                "moon-code-13" -> MOON_CODE_13
+                "moon-code-14" -> MOON_CODE_14
+                "moon-code-15" -> MOON_CODE_15
+                else -> MOON_CODE_0
             }
-            return MOON_CODE_0
         }
     }
 }
 
 enum class PartName(val str: String) {
-    NIGHT("night"){override fun getValue(): String {return "ночь"}},         // ночь.
-    MORNING("morning"){override fun getValue(): String {return "утро"}},     // утро.
-    DAY("day"){override fun getValue(): String {return "день"}},             // день.
-    EVENING("evening"){override fun getValue(): String {return "вечер"}};      // вечер.
+    NIGHT("night") {
+        override fun getValue(): String {
+            return "ночь"
+        }
+    },         // ночь.
+    MORNING("morning") {
+        override fun getValue(): String {
+            return "утро"
+        }
+    },     // утро.
+    DAY("day") {
+        override fun getValue(): String {
+            return "день"
+        }
+    },             // день.
+    EVENING("evening") {
+        override fun getValue(): String {
+            return "вечер"
+        }
+    };      // вечер.
 
-    abstract fun getValue():String
+    abstract fun getValue(): String
 
     companion object {
         fun fromString(str: String): PartName {
-            when (str) {
-                "night" -> return NIGHT
-                "morning" -> return MORNING
-                "day" -> return DAY
-                "evening" -> return EVENING
+            return when (str) {
+                "night" -> NIGHT
+                "morning" -> MORNING
+                "day" -> DAY
+                "evening" -> EVENING
+                else -> DAY
             }
-            return DAY
         }
     }
 }

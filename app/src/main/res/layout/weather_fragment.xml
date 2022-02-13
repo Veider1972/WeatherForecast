@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top"
+    android:orientation="vertical"
+    android:padding="5sp"
+    tools:context=".view.ui.weather.WeatherFragment">
+
+    <LinearLayout
+        android:id="@+id/weather_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/city_name"
+            style="@style/Weather.Now.Header"
+            android:text="Москва" />
+
+        <TextView
+            android:id="@+id/city_coordinates"
+            style="@style/Weather.Now.Header.Coordinates"
+            android:text="55.33" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    style="@style/Weather.Now.Image"
+                    android:src="@drawable/sunrise" />
+
+                <TextView
+                    style="@style/Weather.Now.FirstLine.SunsetDescription"
+                    android:text="@string/sunrise" />
+
+                <TextView
+                    android:id="@+id/sunrise"
+                    style="@style/Weather.Now.FirstLine.SunsetTime"
+                    android:text="00:00" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    style="@style/Weather.Now.Image"
+                    android:src="@drawable/day_clear" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            style="@style/Weather.Now.Image"
+                            android:layout_gravity="bottom"
+                            android:src="@drawable/thermometer" />
+
+                        <TextView
+                            android:id="@+id/temp"
+                            style="@style/Weather.Now.FirstLine.Temperature"
+                            android:text="7" />
+
+                        <TextView
+                            style="@style/Weather.Now.FirstLine.Temperature"
+                            android:text="@string/celsius" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/Weather.Now.FirstLine.TemperatureDescription"
+                            android:text="@string/by_feelings" />
+
+                        <TextView
+                            android:id="@+id/temperature_feels"
+                            style="@style/Weather.Now.FirstLine.TemperatureDescription"
+                            android:text="+7" />
+
+                        <TextView
+                            style="@style/Weather.Now.FirstLine.TemperatureDescription"
+                            android:text="@string/celsius" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    style="@style/Weather.Now.Image"
+                    android:src="@drawable/sunset" />
+
+                <TextView
+                    style="@style/Weather.Now.FirstLine.SunsetDescription"
+                    android:text="@string/subset" />
+
+                <TextView
+                    android:id="@+id/sunset"
+                    style="@style/Weather.Now.FirstLine.SunsetTime"
+                    android:text="00:00" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    style="@style/Weather.Now.Image"
+                    android:src="@drawable/wind" />
+
+                <TextView
+                    style="@style/Weather.Now.SecondLine.Desc"
+                    android:text="@string/wind" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/wind_direction"
+                        style="@style/Weather.Now.Image"
+                        android:src="@drawable/direction_left" />
+
+                    <TextView
+                        android:id="@+id/wind_speed"
+                        style="@style/Weather.Now.SecondLine.Numbers"
+                        android:text="7" />
+
+                    <TextView
+                        style="@style/Weather.Now.SecondLine.Numbers.Desc"
+                        android:layout_marginLeft="@dimen/dimension_left_margin"
+                        android:text="@string/ms" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    style="@style/Weather.Now.Image"
+                    android:src="@drawable/barometer" />
+
+                <TextView
+                    style="@style/Weather.Now.SecondLine.Desc"
+                    android:text="@string/pressure" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/pressure"
+                        style="@style/Weather.Now.SecondLine.Numbers"
+                        android:text="760" />
+
+                    <TextView
+                        style="@style/Weather.Now.SecondLine.Numbers.Desc"
+                        android:layout_marginLeft="@dimen/dimension_left_margin"
+                        android:text="@string/mm" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    style="@style/Weather.Now.Image"
+                    android:src="@drawable/humidity" />
+
+                <TextView
+                    style="@style/Weather.Now.SecondLine.Desc"
+                    android:text="@string/humidity" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/humidity"
+                        style="@style/Weather.Now.SecondLine.Numbers"
+                        android:text="93" />
+
+                    <TextView
+                        style="@style/Weather.Now.SecondLine.Numbers.Desc"
+                        android:layout_marginLeft="@dimen/dimension_left_margin"
+                        android:text="%" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    style="@style/Weather.Now.Image"
+                    android:src="@drawable/thermometer_water" />
+
+                <TextView
+                    style="@style/Weather.Now.SecondLine.Desc"
+                    android:text="@string/water" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/water_temperature"
+                        style="@style/Weather.Now.SecondLine.Numbers"
+                        android:text="6" />
+
+                    <TextView
+                        style="@style/Weather.Now.SecondLine.Numbers.Desc"
+                        android:layout_marginLeft="@dimen/dimension_left_margin"
+                        android:text="°С" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/forecast_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/forecast" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

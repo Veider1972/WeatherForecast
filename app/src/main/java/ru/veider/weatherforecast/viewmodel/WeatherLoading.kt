@@ -7,3 +7,4 @@ sealed class WeatherLoading {
     data class Error(val error: Throwable) : WeatherLoading()
     object Loading : WeatherLoading()
 }
+
