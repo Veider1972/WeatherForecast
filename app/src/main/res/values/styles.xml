@@ -9,6 +9,9 @@
         <item name="android:textAlignment">center</item>
         <item name="android:textSize">@dimen/header_size</item>
     </style>
+    <style name="Weather.Now.Header.Coordinates" parent="Weather.Now.Header">
+        <item name="android:textSize">@dimen/first_sunset_desc_size</item>
+    </style>
     <style name="Weather.Now.FirstLine" parent="Weather.Now">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
@@ -53,6 +56,7 @@
     <style name="Weather.Forecast.FirstLine.Temperature.Attr" parent="Weather.Forecast.Header">
         <item name="android:textSize">@dimen/forecast_first_attr_size</item>
         <item name="android:layout_width">30sp</item>
+        <item name="android:layout_marginLeft">@dimen/forecast_dimension_left_margin</item>
     </style>
     <style name="Weather.Now.Image.Forecast" parent="Weather.Now.Image">
         <item name="android:paddingRight">@dimen/forecast_first_temperature_padding</item>
@@ -71,6 +75,17 @@
     </style>
     <style name="Weather.Forecast.SecondLine.Numbers.Desc" parent="Weather.Forecast.Header">
         <item name="android:textSize">@dimen/forecast_second_numbers_desc_size</item>
+    </style>
+    <style name="Weather.City" parent="Weather.Now">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:textSize">@dimen/city_selection_name_size</item>
+    </style>
+    <style name="Weather.City.Coordinates" parent="Weather.City">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textSize">@dimen/first_sunset_desc_size</item>
+        <item name="android:textAlignment">viewEnd</item>
     </style>
 
 </resources>

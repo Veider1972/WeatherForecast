@@ -11,7 +11,15 @@
     <string name="wind">ветер</string>
     <string name="pressure">давление</string>
     <string name="humidity">влажность</string>
-    <string name="water">осадки</string>
+    <string name="water">воды</string>
+    <string name="rainfall">осадки</string>
     <string name="forecast_on">Прогноз на\u0020</string>
     <string name="max">max</string>
+    <string name="latitude">Широта=</string>
+    <string name="longitude">Долгота=</string>
+    <string name="coordinates">ш=%1$s, д=%2$s</string>
+    <string name="select_a_place">Выберите город:</string>
+    <string name="my_place">Моё место</string>
+    <string name="coordinates_by_gps">Координаты определены по GPS</string>
+    <string name="coordinates_by_network">Координаты определены по сети</string>
 </resources>

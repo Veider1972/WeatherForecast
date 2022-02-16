@@ -1,5 +1,6 @@
-package ru.veider.weatherforecast.view
+package ru.veider.weatherforecast.view.ui.weather
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -9,8 +10,9 @@ import ru.veider.weatherforecast.R
 import ru.veider.weatherforecast.data.Parts
 import ru.veider.weatherforecast.databinding.ForecastBinding
 
-class WeatherAdapter(private val weatherView: WeatherView, private var parts: Array<Parts>) :
-    ArrayAdapter<Parts>(weatherView, R.layout.forecast, parts) {
+class WeatherAdapter(
+    private val weatherFragment: WeatherFragment, private var parts: Array<Parts>
+) : ArrayAdapter<Parts>(weatherFragment.requireContext(), R.layout.forecast, parts) {
 
     private lateinit var holder: WeatherHolder
 
@@ -29,7 +31,7 @@ class WeatherAdapter(private val weatherView: WeatherView, private var parts: Ar
     override fun getView(position: Int, forewecastView: View?, parent: ViewGroup): View {
         var rowView = forewecastView
         if (rowView == null) {
-            val inflater = (context as WeatherView).layoutInflater
+            val inflater = LayoutInflater.from(parent.context)
             val binder = ForecastBinding.inflate(inflater, parent, false)
             rowView = binder.root
             holder = WeatherHolder()
@@ -43,8 +45,10 @@ class WeatherAdapter(private val weatherView: WeatherView, private var parts: Ar
             holder.tempFeelsLike.text = parts[position].feels_like.toString()
             holder.windDirection = binder.windDirection
             binder.windDirection.setImageResource(
-                weatherView.resources.getIdentifier(
-                    parts[position].wind_dir.getDirection(), "drawable", weatherView.packageName
+                weatherFragment.resources.getIdentifier(
+                    parts[position].wind_dir.getDirection(),
+                    "drawable",
+                    weatherFragment.requireActivity().packageName
                 )
             )
             holder.windSpeed = binder.windSpeed
