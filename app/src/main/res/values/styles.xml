@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Weather.Now" parent="Theme.WeatherForecast">
+        <item name="android:textColor">@color/text_color</item>
+    </style>
+    <style name="Weather.Now.Header" parent="Weather.Now">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">@dimen/header_size</item>
+    </style>
+    <style name="Weather.Now.FirstLine" parent="Weather.Now">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+    <style name="Weather.Now.FirstLine.Temperature" parent="Weather.Now.FirstLine">
+        <item name="android:textSize">@dimen/first_temperature_size</item>
+    </style>
+    <style name="Weather.Now.FirstLine.SunsetDescription" parent="Weather.Now.FirstLine">
+        <item name="android:textSize">@dimen/first_sunset_desc_size</item>
+        <item name="android:textColor">@color/desc_color</item>
+    </style>
+    <style name="Weather.Now.FirstLine.SunsetTime" parent="Weather.Now.FirstLine">
+        <item name="android:textSize">@dimen/first_sunset_time_size</item>
+    </style>
+    <style name="Weather.Now.FirstLine.TemperatureDescription" parent="Weather.Now.FirstLine">
+        <item name="android:textSize">@dimen/first_sunset_desc_size</item>
+    </style>
+    <style name="Weather.Now.SecondLine.Desc" parent="Weather.Now.FirstLine">
+        <item name="android:textSize">@dimen/second_desc_size</item>
+        <item name="android:textColor">@color/desc_color</item>
+    </style>
+    <style name="Weather.Now.SecondLine.Numbers" parent="Weather.Now.FirstLine">
+        <item name="android:textSize">@dimen/second_numbers_size</item>
+    </style>
+    <style name="Weather.Now.SecondLine.Numbers.Desc" parent="Weather.Now.FirstLine">
+        <item name="android:textSize">@dimen/second_numbers_desc_size</item>
+    </style>
+
+    <style name="Weather.Now.Image" parent="Theme.WeatherForecast">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="Weather.Forecast.Header" parent="Weather.Now">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/forecast_header_size</item>
+    </style>
+    <style name="Weather.Forecast.FirstLine.Temperature" parent="Weather.Forecast.Header">
+        <item name="android:textSize">@dimen/forecast_first_temperature_size</item>
+        <item name="android:layout_marginLeft">@dimen/forecast_first_temperature_margin</item>
+    </style>
+    <style name="Weather.Forecast.FirstLine.Temperature.Attr" parent="Weather.Forecast.Header">
+        <item name="android:textSize">@dimen/forecast_first_attr_size</item>
+        <item name="android:layout_width">30sp</item>
+    </style>
+    <style name="Weather.Now.Image.Forecast" parent="Weather.Now.Image">
+        <item name="android:paddingRight">@dimen/forecast_first_temperature_padding</item>
+        <item name="android:layout_gravity">bottom</item>
+    </style>
+    <style name="Weather.Forecast.FirstLine.Feelings" parent="Weather.Forecast.Header">
+        <item name="android:textSize">@dimen/forecast_first_feelings_size</item>
+        <item name="android:textColor">@color/desc_color</item>
+    </style>
+    <style name="Weather.Forecast.SecondLine.Desc" parent="Weather.Forecast.Header">
+        <item name="android:textSize">@dimen/forecast_second_desc_size</item>
+        <item name="android:textColor">@color/desc_color</item>
+    </style>
+    <style name="Weather.Forecast.SecondLine.Numbers" parent="Weather.Forecast.Header">
+        <item name="android:textSize">@dimen/forecast_second_numbers_size</item>
+    </style>
+    <style name="Weather.Forecast.SecondLine.Numbers.Desc" parent="Weather.Forecast.Header">
+        <item name="android:textSize">@dimen/forecast_second_numbers_desc_size</item>
+    </style>
+
+</resources>

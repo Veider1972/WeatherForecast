@@ -1,3 +1,17 @@
 <resources>
-    <string name="app_name">WeatherForecast</string>
+    <string name="app_name">Прогноз погоды</string>
+    <string name="error">Ошибка</string>
+    <string name="reload">Обновление</string>
+    <string name="celsius">°С</string>
+    <string name="by_feelings">По ощущениям\u0020</string>
+    <string name="mm">мм</string>
+    <string name="ms">м/с</string>
+    <string name="sunrise">восход</string>
+    <string name="subset">закат</string>
+    <string name="wind">ветер</string>
+    <string name="pressure">давление</string>
+    <string name="humidity">влажность</string>
+    <string name="water">осадки</string>
+    <string name="forecast_on">Прогноз на\u0020</string>
+    <string name="max">max</string>
 </resources>
