@@ -24,7 +24,7 @@ class WeatherAdapter(
         lateinit var windDirection: ImageView
         lateinit var windSpeed: TextView
         lateinit var pressure: TextView
-        lateinit var humidity: TextView
+        lateinit var moisture: TextView
         lateinit var rainFall: TextView
     }
 
@@ -34,35 +34,31 @@ class WeatherAdapter(
             val inflater = LayoutInflater.from(parent.context)
             val binder = ForecastBinding.inflate(inflater, parent, false)
             rowView = binder.root
-            holder = WeatherHolder()
-            holder.partName = binder.partName
-            holder.partName.text = parts[position].part_name.getValue()
-            holder.tempMax = binder.tempMax
-            holder.tempMax.text = parts[position].temp_max.toString()
-            holder.tempMin = binder.tempMin
-            holder.tempMin.text = parts[position].temp_min.toString()
-            holder.tempFeelsLike = binder.temperatureFeels
-            holder.tempFeelsLike.text = parts[position].feels_like.toString()
-            holder.windDirection = binder.windDirection
-            binder.windDirection.setImageResource(
-                weatherFragment.resources.getIdentifier(
-                    parts[position].wind_dir.getDirection(),
-                    "drawable",
-                    weatherFragment.requireActivity().packageName
-                )
-            )
-            holder.windSpeed = binder.windSpeed
-            holder.windSpeed.text = parts[position].wind_speed.toString()
-            holder.pressure = binder.pressure
-            holder.pressure.text = parts[position].pressure_mm.toString()
-            holder.humidity = binder.humidity
-            holder.humidity.text = parts[position].humidity.toString()
-            holder.rainFall = binder.rainFalls
-            holder.rainFall.text = parts[position].prec_mm.toString()
+            holder = WeatherHolder().also {
+                with(binder) {
+                    with(parts[position]) {
+                        it.partName = partName.also { it.text = part_name.getValue() }
+                        it.tempMax = tempMax.also { it.text = temp_max.toString() }
+                        it.tempMin = tempMin.also { it.text = temp_min.toString() }
+                        it.tempFeelsLike = temperatureFeels.also { it.text = feels_like.toString() }
+                        it.windDirection = windDirection.also {
+                            it.setImageResource(
+                                weatherFragment.resources.getIdentifier(
+                                    wind_dir.getDirection(),
+                                    "drawable",
+                                    weatherFragment.requireActivity().packageName
+                                )
+                            )
+                        }
+                        it.windSpeed = windSpeed.also { it.text = wind_speed.toString() }
+                        it.pressure = pressure.also { it.text = pressure_mm.toString() }
+                        it.moisture = moisture.also { it.text = humidity.toString() }
+                        it.rainFall = rainFalls.also { it.text = prec_mm.toString() }
+                    }
+                }
+            }
             rowView.setTag(holder)
-        } else {
-            holder = rowView.tag as WeatherHolder
-        }
+        } else holder = rowView.tag as WeatherHolder
         return rowView
     }
 }

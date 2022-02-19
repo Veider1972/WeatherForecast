@@ -3,6 +3,7 @@ package ru.veider.weatherforecast.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.veider.weatherforecast.data.DataLoading
+import ru.veider.weatherforecast.data.DataLoading.*
 import ru.veider.weatherforecast.repository.CitiesRepository
 import ru.veider.weatherforecast.repository.CitiesRepositoryImpl
 import ru.veider.weatherforecast.repository.WeatherRepository
@@ -24,13 +25,16 @@ class WeatherViewModel(
 
     fun getCitiesFromRemoteSource() = getCities()
 
-    private var dataLoading: DataLoading = DataLoading.RUSSIAN
-    private fun getDataLoading(): DataLoading {
-       if (dataLoading == DataLoading.RUSSIAN)
-           dataLoading = DataLoading.FOREIGN
-       else
-           dataLoading = DataLoading.RUSSIAN
-        return dataLoading
+    private var dataLoading: DataLoading = RUSSIAN
+    private fun DataLoading.getData(): DataLoading {
+        return when (this) {
+            RUSSIAN -> {
+                dataLoading = FOREIGN; FOREIGN
+            }
+            FOREIGN -> {
+                dataLoading = RUSSIAN; RUSSIAN
+            }
+        }
     }
 
     private fun getDataFromLocalSource() {
@@ -45,18 +49,14 @@ class WeatherViewModel(
         liveCities.value = CitiesLoading.Loading
         Thread {
             Thread.sleep(2000)
-            when (getDataLoading()) {
-                DataLoading.RUSSIAN -> liveCities.postValue(
-                    CitiesLoading.Success(
-                        citiesRepositoryImpl.getCitiesFromServer(DataLoading.RUSSIAN)
-                    )
+            liveCities.postValue(
+                CitiesLoading.Success(
+                    when (dataLoading.getData()) {
+                        RUSSIAN -> citiesRepositoryImpl.getCitiesFromServer(RUSSIAN)
+                        FOREIGN -> citiesRepositoryImpl.getCitiesFromServer(FOREIGN)
+                    }
                 )
-                DataLoading.FOREIGN -> liveCities.postValue(
-                    CitiesLoading.Success(
-                        citiesRepositoryImpl.getCitiesFromServer(DataLoading.FOREIGN)
-                    )
-                )
-            }
+            )
         }.start()
     }
 }

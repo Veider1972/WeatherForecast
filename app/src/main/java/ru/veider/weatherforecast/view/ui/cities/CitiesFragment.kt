@@ -20,66 +20,60 @@ import com.google.android.material.snackbar.Snackbar
 import ru.veider.weatherforecast.R
 import ru.veider.weatherforecast.data.WeatherQuery
 import ru.veider.weatherforecast.databinding.CitiesFragmentBinding
-import ru.veider.weatherforecast.utils.REQUEST_PERMISSION_LOCATION
-import ru.veider.weatherforecast.utils.Utils
+import ru.veider.weatherforecast.utils.*
 import ru.veider.weatherforecast.view.ui.weather.WeatherFragment
 import ru.veider.weatherforecast.viewmodel.CitiesLoading
 import ru.veider.weatherforecast.viewmodel.WeatherViewModel
 
-class CitiesFragment : Fragment(), Utils, CitiesAdapter.OnCitySelected {
+class CitiesFragment : Fragment(),
+    CitiesAdapter.OnCitySelected {
 
     private var _binder: CitiesFragmentBinding? = null
     private val binder get() = _binder!!
-    private lateinit var viewModel: WeatherViewModel
-    private lateinit var locationManager: LocationManager
-    private var myWeatherQuery: WeatherQuery = WeatherQuery("", 0.0, 0.0, "ru_RU")
+    private val viewModel: WeatherViewModel by lazy { ViewModelProvider(this)[WeatherViewModel::class.java] }
+    private val locationManager: LocationManager by lazy { requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager }
+    private var myWeatherQuery: WeatherQuery = WeatherQuery(
+        "", 0.0, 0.0, "ru_RU"
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binder = CitiesFragmentBinding.inflate(inflater)
-        val citiesView = binder.root
-        val fab = binder.actionButton
-        fab.setOnClickListener {
-            viewModel.getCitiesFromRemoteSource()
+        with(binder) {
+            actionButton.setOnClickListener { viewModel.getCitiesFromRemoteSource() }
+            myPlace.setOnClickListener { chooseCity(myWeatherQuery) }
         }
-        binder.myPlace.setOnClickListener {
-            chooseCity(myWeatherQuery)
+        with(viewModel) {
+            getCitiesData().observe(this@CitiesFragment.viewLifecycleOwner,
+                Observer<CitiesLoading> { getCitiesData(it) })
+            getCitiesFromRemoteSource()
         }
-        locationManager =
-            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return citiesView
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this)[WeatherViewModel::class.java]
-        val citiesData = Observer<CitiesLoading> { getCitiesData(it) }
-        viewModel.getCitiesData().observe(this.viewLifecycleOwner, citiesData)
-        viewModel.getCitiesFromRemoteSource()
-        val recyclerView = binder.citiesRecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(this.context)
+        binder.citiesRecyclerView.layoutManager = LinearLayoutManager(this.context)
+        return binder.root
     }
 
     private fun getCitiesData(citiesLoading: CitiesLoading) {
-        when (citiesLoading) {
-            is CitiesLoading.Success -> {
-                binder.loadingLayout.visibility = View.GONE
-                binder.citiesView.visibility = View.VISIBLE
-                binder.citiesRecyclerView.adapter = CitiesAdapter(citiesLoading.citiesData, this)
-            }
-            is CitiesLoading.Error -> {
-                binder.citiesView.visibility = View.GONE
-                binder.loadingLayout.visibility = View.GONE
-                Snackbar.make(
-                    binder.citiesView, getString(R.string.error), Snackbar.LENGTH_INDEFINITE
-                ).setAction(getString(R.string.reload)) {
-                    viewModel.getCitiesData()
-                }.show()
-            }
-            is CitiesLoading.Loading -> {
-                binder.citiesView.visibility = View.GONE
-                binder.loadingLayout.visibility = View.VISIBLE
+        with(binder) {
+            when (citiesLoading) {
+                is CitiesLoading.Success -> {
+                    loadingLayout.visibility = View.GONE
+                    citiesView.visibility = View.VISIBLE
+                    citiesRecyclerView.adapter = CitiesAdapter(
+                        citiesLoading.citiesData, this@CitiesFragment
+                    )
+                }
+                is CitiesLoading.Error -> {
+                    citiesView.visibility = View.GONE
+                    loadingLayout.visibility = View.GONE
+                    this@CitiesFragment.view?.showSnack(getString(R.string.error),
+                        getString(R.string.reload),
+                        { viewModel.getCitiesData() })
+                }
+                is CitiesLoading.Loading -> {
+                    citiesView.visibility = View.GONE
+                    loadingLayout.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -92,19 +86,17 @@ class CitiesFragment : Fragment(), Utils, CitiesAdapter.OnCitySelected {
                 this.requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            Toast.makeText(
-                this.requireContext(),
-                "Для работы геолокации нужно дать приложению разрешение",
-                Toast.LENGTH_LONG
-            ).show()
+            this@CitiesFragment.view?.showToast(getString(R.string.geolocation_permission))
             return
         }
-        locationManager.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER, 1000 * 2, 5000f, locationListener
-        )
-        locationManager.requestLocationUpdates(
-            LocationManager.NETWORK_PROVIDER, 1000 * 2, 5000f, locationListener
-        )
+        with(locationManager) {
+            requestLocationUpdates(
+                LocationManager.GPS_PROVIDER, 1000 * 2, 5000f, locationListener
+            )
+            requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, 1000 * 2, 5000f, locationListener
+            )
+        }
     }
 
     override fun onPause() {
@@ -120,15 +112,18 @@ class CitiesFragment : Fragment(), Utils, CitiesAdapter.OnCitySelected {
                 getString(R.string.my_place),
                 location.latitude,
                 location.longitude,
-                "ru_RU"
-            )
-            binder.myPlaceCity.text = myWeatherQuery.name
-            binder.myPlaceCoordinates.text = String.format(
-                getString(R.string.coordinates),
-                doubleToXString(myWeatherQuery.latitude),
-                doubleToYString(myWeatherQuery.longitude)
-            )
-            binder.myPlace.visibility = View.VISIBLE
+                getString(R.string.default_location_language)
+            ).also {
+                with(binder) {
+                    myPlaceCity.text = it.name
+                    myPlaceCoordinates.text = String.format(
+                        getString(R.string.coordinates),
+                        it.latitude.toLatString(),
+                        it.longitude.toLonString()
+                    )
+                    myPlace.visibility = View.VISIBLE
+                }
+            }
         }
 
         override fun onProviderDisabled(provider: String) {
@@ -139,19 +134,12 @@ class CitiesFragment : Fragment(), Utils, CitiesAdapter.OnCitySelected {
             binder.myPlace.visibility = View.VISIBLE
         }
 
-        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
-            if (provider == LocationManager.GPS_PROVIDER) {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.coordinates_by_gps),
-                    Toast.LENGTH_LONG
-                ).show()
-            } else if (provider == LocationManager.NETWORK_PROVIDER) {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.coordinates_by_network),
-                    Toast.LENGTH_LONG
-                ).show()
+        override fun onStatusChanged(
+            provider: String, status: Int, extras: Bundle
+        ) {
+            when (provider) {
+                LocationManager.GPS_PROVIDER -> this@CitiesFragment.view?.showToast(getString(R.string.coordinates_by_gps))
+                LocationManager.NETWORK_PROVIDER -> this@CitiesFragment.view?.showToast(getString(R.string.coordinates_by_network))
             }
         }
     }
@@ -159,22 +147,23 @@ class CitiesFragment : Fragment(), Utils, CitiesAdapter.OnCitySelected {
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_PERMISSION_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this.requireContext(), "Permission granted", Toast.LENGTH_SHORT)
-                    .show()
+                this@CitiesFragment.view?.showToast(getString(R.string.permission_granted))
             }
         }
     }
 
     override fun chooseCity(weatherQuery: WeatherQuery) {
-        val weatherFragment = WeatherFragment()
-        val bundle = Bundle()
-        bundle.putParcelable("weather", weatherQuery)
-        weatherFragment.arguments = bundle
-        parentFragmentManager.beginTransaction().replace(R.id.container, weatherFragment)
-            .addToBackStack("weather").commit()
+        val weatherFragment = WeatherFragment().also {
+            it.arguments = Bundle().also {
+                it.putParcelable("weather", weatherQuery)
+            }
+        }
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.container, weatherFragment)
+            .addToBackStack("weather")
+            .commit()
     }
 }
 
