@@ -1,34 +1,42 @@
 package ru.veider.weatherforecast.view.ui.weather
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.snackbar.Snackbar
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.gson.Gson
+import kotlinx.android.synthetic.main.weather_fragment.*
 import ru.veider.weatherforecast.R
+import ru.veider.weatherforecast.data.DayTime
 import ru.veider.weatherforecast.data.WeatherData
 import ru.veider.weatherforecast.data.WeatherQuery
 import ru.veider.weatherforecast.databinding.WeatherFragmentBinding
+import ru.veider.weatherforecast.repository.*
 import ru.veider.weatherforecast.utils.showSnack
 import ru.veider.weatherforecast.utils.toLatString
 import ru.veider.weatherforecast.utils.toLonString
 import ru.veider.weatherforecast.viewmodel.WeatherLoading
-import ru.veider.weatherforecast.viewmodel.WeatherViewModel
+import java.lang.Exception
 
 class WeatherFragment : Fragment() {
 
     private var _binder: WeatherFragmentBinding? = null
     private val binder get() = _binder!!
-    private val weatherViewModel: WeatherViewModel by lazy {
-        ViewModelProvider(this).get(
-            WeatherViewModel::class.java
-        )
-    }
+    private val handle = Handler(Looper.getMainLooper())
     private lateinit var weatherQuery: WeatherQuery
+    private val weatherBroadcastReceiver = WeatherBroadcastReceiver()
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -37,33 +45,43 @@ class WeatherFragment : Fragment() {
             weatherQuery = bundle?.getParcelable<WeatherQuery>("weather") as WeatherQuery
         }
         _binder = WeatherFragmentBinding.inflate(inflater)
-        val weatherData = Observer<WeatherLoading> { getWeatherData(it) }
-        with(weatherViewModel) {
-            getWeatherData().observe(this@WeatherFragment.viewLifecycleOwner, weatherData)
-            getWeatherFromLocalSource()
-        }
+
+        LocalBroadcastManager.getInstance(requireContext())
+            .registerReceiver(
+                weatherBroadcastReceiver, IntentFilter(INTENT_WEATHER)
+            )
+        WeatherIntentService.startWeatherService(
+            requireContext(), weatherQuery.latitude, weatherQuery.longitude
+        )
 
         return binder.root
     }
 
-    private fun getWeatherData(weatherLoading: WeatherLoading) {
-        with(binder) {
-            when (weatherLoading) {
-                is WeatherLoading.Success -> {
-                    loadingLayout.visibility = View.GONE
-                    weatherView.visibility = View.VISIBLE
-                    setData(weatherLoading.weatherData)
-                }
-                is WeatherLoading.Error -> {
-                    weatherView.visibility = View.GONE
-                    loadingLayout.visibility = View.GONE
-                    weatherView.showSnack(getString(R.string.error),
-                        getString(R.string.reload),
-                        { weatherViewModel.getWeatherFromLocalSource() })
-                }
-                is WeatherLoading.Loading -> {
-                    weatherView.visibility = View.GONE
-                    loadingLayout.visibility = View.VISIBLE
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun setWeatherMode(weatherLoading: WeatherLoading) {
+        handle.post {
+            with(binder) {
+                when (weatherLoading) {
+                    is WeatherLoading.Success -> {
+                        loadingLayout.visibility = View.GONE
+                        weatherView.visibility = View.VISIBLE
+                        setData(weatherLoading.weatherData)
+                    }
+                    is WeatherLoading.Error -> {
+                        weatherView.visibility = View.GONE
+                        loadingLayout.visibility = View.GONE
+                        weatherView.showSnack(getString(R.string.error) + ": " + weatherLoading.error,
+                            getString(R.string.reload),
+                            {
+                                WeatherIntentService.startWeatherService(
+                                    requireContext(), weatherQuery.latitude, weatherQuery.longitude
+                                )
+                            })
+                    }
+                    is WeatherLoading.Loading -> {
+                        weatherView.visibility = View.GONE
+                        loadingLayout.visibility = View.VISIBLE
+                    }
                 }
             }
         }
@@ -77,28 +95,72 @@ class WeatherFragment : Fragment() {
     private fun setData(weatherData: WeatherData) {
         with(binder) {
             with(weatherData) {
-                cityName.text = weatherQuery.name
+                cityName.text = weatherData.geo_object?.district?.name
+                    ?: weatherData.geo_object?.locality?.name ?: getString(R.string.error)
                 cityCoordinates.text = String.format(
                     getString(R.string.coordinates),
-                    weatherQuery.latitude.toLatString(),
-                    weatherQuery.longitude.toLonString()
+                    weatherData.info?.latitude?.toLatString() ?: getString(R.string.error),
+                    weatherData.info?.longitude?.toLonString() ?: getString(R.string.error)
                 )
-                temp.text = fact.temp.toString()
-                sunrise.text = forecast.sunrise
-                sunset.text = forecast.sunset
-                temperatureFeels.text = fact.feels_like.toString()
-                pressure.text = fact.pressure_mm.toString()
-                moisture.text = fact.humidity.toString()
-                waterTemperature.text = if (fact.temp_water != null) fact.temp_water.toString() else "-"
+                conditions.setImageResource(
+                    resources.getIdentifier(
+                        fact?.condition?.getIcon(fact.daytime ?: DayTime.DAY),
+                        "drawable",
+                        requireActivity().packageName
+                    )
+                )
+                temp.text = fact?.temp?.toString()
+                temperatureFeels.text = fact?.feels_like.toString()
+                windSpeed.text = fact?.wind_speed.toString()
+                pressure.text = fact?.pressure_mm.toString()
+                moisture.text = fact?.humidity.toString()
+
+                if (fact?.temp_water != null) {
+                    waterTemperature.text = fact.temp_water.toString()
+                    water_view.visibility = View.VISIBLE
+                } else {
+                    water_view.visibility = View.GONE
+                }
+
                 windDirection.setImageResource(
                     resources.getIdentifier(
-                        fact.wind_dir.getDirection(), "drawable", requireActivity().packageName
+                        fact?.wind_dir?.getDirection(), "drawable", requireActivity().packageName
                     )
                 )
             }
-            forecastListView.adapter = WeatherAdapter(
-                this@WeatherFragment, weatherData.forecast.parts
-            )
+        }
+    }
+
+    override fun onDestroy() {
+        LocalBroadcastManager.getInstance(requireContext())
+            .unregisterReceiver(weatherBroadcastReceiver)
+        super.onDestroy()
+    }
+
+    inner class WeatherBroadcastReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent?.let {
+                when (intent.getStringExtra(INTENT_STATUS)) {
+                    ON_LOADING -> setWeatherMode(WeatherLoading.Loading)
+                    ON_ERROR -> {
+                        val error = intent.getStringExtra(WEATHER_ERROR)
+                        setWeatherMode(WeatherLoading.Error(error ?: ""))
+                    }
+                    ON_SUCCESS -> {
+                        val weatherString = intent.getStringExtra(WEATHER_DATA)
+                        try {
+                            val weatherData: WeatherData = Gson().fromJson(
+                                weatherString, WeatherData::class.java
+                            )
+                            setWeatherMode(WeatherLoading.Success(weatherData))
+                        } catch (e: Exception) {
+                            setWeatherMode(WeatherLoading.Error(e.toString()))
+                        }
+
+                    }
+                }
+
+            }
         }
     }
 }

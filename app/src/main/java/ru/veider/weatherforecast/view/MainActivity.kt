@@ -23,11 +23,13 @@ class MainActivity : AppCompatActivity() {
 
         binder = MainActivityBinding.inflate(layoutInflater)
         setContentView(binder.root)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, CitiesFragment())
-                .commitNow()
-        }
+        savedInstanceState
+            ?.let {}
+            .run {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, CitiesFragment())
+                    .commitNow()
+            }
     }
 
     private fun checkPermissionForLocation(): Boolean {

@@ -43,6 +43,7 @@
     <style name="Weather.Now.Image" parent="Theme.WeatherForecast">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:scaleType">fitCenter</item>
     </style>
     <style name="Weather.Forecast.Header" parent="Weather.Now">
         <item name="android:layout_width">wrap_content</item>
