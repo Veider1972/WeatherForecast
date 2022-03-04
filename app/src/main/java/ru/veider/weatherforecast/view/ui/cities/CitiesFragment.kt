@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.veider.weatherforecast.R
+import ru.veider.weatherforecast.data.DataLoading
 import ru.veider.weatherforecast.data.Language
 import ru.veider.weatherforecast.data.WeatherQuery
 import ru.veider.weatherforecast.databinding.CitiesFragmentBinding
@@ -39,7 +40,13 @@ class CitiesFragment : Fragment(),
     ): View {
         _binder = CitiesFragmentBinding.inflate(inflater)
         with(binder) {
-            actionButton.setOnClickListener { viewModel.getCitiesFromRemoteSource() }
+            actionButton.setOnClickListener {
+                when (viewModel.dataLoading){
+                    DataLoading.RUSSIAN -> viewModel.dataLoading = DataLoading.FOREIGN
+                    DataLoading.FOREIGN -> viewModel.dataLoading = DataLoading.RUSSIAN
+                }
+                viewModel.getCitiesFromRemoteSource()
+            }
             myPlace.setOnClickListener { chooseCity(myWeatherQuery) }
         }
         with(viewModel) {
