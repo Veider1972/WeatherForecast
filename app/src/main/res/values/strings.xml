@@ -25,4 +25,6 @@
     <string name="geolocation_permission">Для работы геолокации нужно дать приложению разрешение</string>
     <string name="default_location_language">RU</string>
     <string name="permission_granted">Разрешение получено</string>
+    <string name="check_internet">"Проверьте, что программе предоставлен доступ к интернету"</string>
+    <string name="no_answer">"Сервер не отвечает"</string>
 </resources>

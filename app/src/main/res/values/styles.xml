@@ -78,7 +78,7 @@
         <item name="android:textSize">@dimen/forecast_second_numbers_desc_size</item>
     </style>
     <style name="Weather.City" parent="Weather.Now">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">textStart</item>
         <item name="android:textSize">@dimen/city_selection_name_size</item>
@@ -86,7 +86,8 @@
     <style name="Weather.City.Coordinates" parent="Weather.City">
         <item name="android:layout_width">match_parent</item>
         <item name="android:textSize">@dimen/first_sunset_desc_size</item>
-        <item name="android:textAlignment">viewEnd</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:textColor">@color/desc_color</item>
     </style>
 
 </resources>

@@ -12,7 +12,7 @@ data class WeatherQuery(
 ) : Parcelable
 
 @Parcelize
-enum class Language(public val str: String) : Parcelable {
+enum class Language(val str: String) : Parcelable {
     RU("ru_RU"),     // русский язык для домена России.
     UA_RU("ru_UA"),  // русский язык для домена Украины.
     UA_UK("uk_UA"),  // украинский язык для домена Украины.
@@ -345,7 +345,6 @@ enum class WindDir {
     };
 
     abstract fun getDirection(): String
-
 }
 
 enum class DayTime {
@@ -354,7 +353,6 @@ enum class DayTime {
 
     @SerializedName("n")
     NIGHT;         // темное время суток
-
 }
 
 //

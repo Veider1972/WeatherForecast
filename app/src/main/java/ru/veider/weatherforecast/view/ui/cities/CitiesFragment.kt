@@ -21,7 +21,7 @@ import ru.veider.weatherforecast.data.WeatherQuery
 import ru.veider.weatherforecast.databinding.CitiesFragmentBinding
 import ru.veider.weatherforecast.utils.*
 import ru.veider.weatherforecast.view.ui.weather.WeatherFragment
-import ru.veider.weatherforecast.viewmodel.CitiesLoading
+import ru.veider.weatherforecast.repository.CitiesLoadingState
 import ru.veider.weatherforecast.viewmodel.WeatherViewModel
 
 class CitiesFragment : Fragment(),
@@ -57,24 +57,24 @@ class CitiesFragment : Fragment(),
         return binder.root
     }
 
-    private fun getCitiesData(citiesLoading: CitiesLoading) {
+    private fun getCitiesData(citiesLoadingState: CitiesLoadingState) {
         with(binder) {
-            when (citiesLoading) {
-                is CitiesLoading.Success -> {
+            when (citiesLoadingState) {
+                is CitiesLoadingState.Success -> {
                     loadingLayout.visibility = View.GONE
                     citiesView.visibility = View.VISIBLE
                     citiesRecyclerView.adapter = CitiesAdapter(
-                        citiesLoading.citiesData, this@CitiesFragment
+                        citiesLoadingState.citiesData, this@CitiesFragment
                     )
                 }
-                is CitiesLoading.Error -> {
+                is CitiesLoadingState.Error -> {
                     citiesView.visibility = View.GONE
                     loadingLayout.visibility = View.GONE
                     this@CitiesFragment.view?.showSnack(getString(R.string.error),
                         getString(R.string.reload),
                         { viewModel.getCitiesData() })
                 }
-                is CitiesLoading.Loading -> {
+                is CitiesLoadingState.LoadingState -> {
                     citiesView.visibility = View.GONE
                     loadingLayout.visibility = View.VISIBLE
                 }
@@ -90,7 +90,7 @@ class CitiesFragment : Fragment(),
                 this.requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            this@CitiesFragment.view?.showToast(getString(R.string.geolocation_permission))
+            requireContext().showToast(getString(R.string.geolocation_permission))
             return
         }
         with(locationManager) {
@@ -144,8 +144,8 @@ class CitiesFragment : Fragment(),
             provider: String, status: Int, extras: Bundle
         ) {
             when (provider) {
-                LocationManager.GPS_PROVIDER -> this@CitiesFragment.view?.showToast(getString(R.string.coordinates_by_gps))
-                LocationManager.NETWORK_PROVIDER -> this@CitiesFragment.view?.showToast(getString(R.string.coordinates_by_network))
+                LocationManager.GPS_PROVIDER -> requireContext().showToast(getString(R.string.coordinates_by_gps))
+                LocationManager.NETWORK_PROVIDER -> requireContext().showToast(getString(R.string.coordinates_by_network))
             }
         }
     }
@@ -155,7 +155,7 @@ class CitiesFragment : Fragment(),
     ) {
         if (requestCode == REQUEST_PERMISSION_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                this@CitiesFragment.view?.showToast(getString(R.string.permission_granted))
+                requireContext().showToast(getString(R.string.permission_granted))
             }
         }
     }

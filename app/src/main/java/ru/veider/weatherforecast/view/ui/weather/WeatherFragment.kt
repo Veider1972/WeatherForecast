@@ -1,9 +1,5 @@
 package ru.veider.weatherforecast.view.ui.weather
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -13,20 +9,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.weather_fragment.*
+import okhttp3.*
+import ru.veider.weatherforecast.BuildConfig
 import ru.veider.weatherforecast.R
 import ru.veider.weatherforecast.data.DayTime
 import ru.veider.weatherforecast.data.WeatherData
 import ru.veider.weatherforecast.data.WeatherQuery
 import ru.veider.weatherforecast.databinding.WeatherFragmentBinding
-import ru.veider.weatherforecast.repository.*
 import ru.veider.weatherforecast.utils.showSnack
+import ru.veider.weatherforecast.utils.showToast
 import ru.veider.weatherforecast.utils.toLatString
 import ru.veider.weatherforecast.utils.toLonString
-import ru.veider.weatherforecast.viewmodel.WeatherLoading
+import ru.veider.weatherforecast.repository.WeatherLoadingState
+import java.io.IOException
 import java.lang.Exception
+
+
+private const val REQUEST_API_KEY = "X-Yandex-API-Key"
 
 class WeatherFragment : Fragment() {
 
@@ -34,7 +35,6 @@ class WeatherFragment : Fragment() {
     private val binder get() = _binder!!
     private val handle = Handler(Looper.getMainLooper())
     private lateinit var weatherQuery: WeatherQuery
-    private val weatherBroadcastReceiver = WeatherBroadcastReceiver()
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
@@ -45,40 +45,67 @@ class WeatherFragment : Fragment() {
             weatherQuery = bundle?.getParcelable<WeatherQuery>("weather") as WeatherQuery
         }
         _binder = WeatherFragmentBinding.inflate(inflater)
-
-        LocalBroadcastManager.getInstance(requireContext())
-            .registerReceiver(
-                weatherBroadcastReceiver, IntentFilter(INTENT_WEATHER)
-            )
-        WeatherIntentService.startWeatherService(
-            requireContext(), weatherQuery.latitude, weatherQuery.longitude
-        )
-
+        getWeather()
         return binder.root
     }
 
+    //@RequiresApi(value = 24)
+    private fun getWeather() {
+        setWeatherMode(WeatherLoadingState.LoadingState)
+        val client = OkHttpClient()
+        val builder: Request.Builder = Request.Builder()
+            .apply {
+                header(REQUEST_API_KEY, BuildConfig.YANDEX_API_KEY)
+                url("https://api.weather.yandex.ru/v2/forecast?lat=${weatherQuery.latitude}&lon=${weatherQuery.longitude}&limit=1&hours=false&extra=false")
+            }
+        val request: Request = builder.build()
+        val call: Call = client.newCall(request)
+        call.enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                setWeatherMode(WeatherLoadingState.Error(e.toString()))
+                requireContext().showToast(getString(R.string.check_internet))
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful) {
+                    //setWeatherMode(WeatherLoadingState.Error(response.))
+                    requireContext().showToast(getString(R.string.no_answer))
+                } else {
+                    try {
+                        val answer = response.body?.charStream()
+                        val weatherData: WeatherData = Gson().fromJson(
+                            answer, WeatherData::class.java
+                        )
+                        setWeatherMode(WeatherLoadingState.Success(weatherData))
+                    } catch (e: Exception) {
+                        setWeatherMode(WeatherLoadingState.Error(e.toString()))
+                        requireContext().showToast(getString(R.string.error) + ": " + e.toString())
+                    }
+                }
+            }
+        })
+    }
+
     @RequiresApi(Build.VERSION_CODES.N)
-    private fun setWeatherMode(weatherLoading: WeatherLoading) {
+    private fun setWeatherMode(weatherLoadingState: WeatherLoadingState) {
         handle.post {
             with(binder) {
-                when (weatherLoading) {
-                    is WeatherLoading.Success -> {
+                when (weatherLoadingState) {
+                    is WeatherLoadingState.Success -> {
                         loadingLayout.visibility = View.GONE
                         weatherView.visibility = View.VISIBLE
-                        setData(weatherLoading.weatherData)
+                        setData(weatherLoadingState.weatherData)
                     }
-                    is WeatherLoading.Error -> {
+                    is WeatherLoadingState.Error -> {
                         weatherView.visibility = View.GONE
                         loadingLayout.visibility = View.GONE
-                        weatherView.showSnack(getString(R.string.error) + ": " + weatherLoading.error,
+                        weatherView.showSnack(getString(R.string.error) + ": " + weatherLoadingState.error,
                             getString(R.string.reload),
                             {
-                                WeatherIntentService.startWeatherService(
-                                    requireContext(), weatherQuery.latitude, weatherQuery.longitude
-                                )
+                                getWeather()
                             })
                     }
-                    is WeatherLoading.Loading -> {
+                    is WeatherLoadingState.LoadingState -> {
                         weatherView.visibility = View.GONE
                         loadingLayout.visibility = View.VISIBLE
                     }
@@ -127,39 +154,6 @@ class WeatherFragment : Fragment() {
                         fact?.wind_dir?.getDirection(), "drawable", requireActivity().packageName
                     )
                 )
-            }
-        }
-    }
-
-    override fun onDestroy() {
-        LocalBroadcastManager.getInstance(requireContext())
-            .unregisterReceiver(weatherBroadcastReceiver)
-        super.onDestroy()
-    }
-
-    inner class WeatherBroadcastReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            intent?.let {
-                when (intent.getStringExtra(INTENT_STATUS)) {
-                    ON_LOADING -> setWeatherMode(WeatherLoading.Loading)
-                    ON_ERROR -> {
-                        val error = intent.getStringExtra(WEATHER_ERROR)
-                        setWeatherMode(WeatherLoading.Error(error ?: ""))
-                    }
-                    ON_SUCCESS -> {
-                        val weatherString = intent.getStringExtra(WEATHER_DATA)
-                        try {
-                            val weatherData: WeatherData = Gson().fromJson(
-                                weatherString, WeatherData::class.java
-                            )
-                            setWeatherMode(WeatherLoading.Success(weatherData))
-                        } catch (e: Exception) {
-                            setWeatherMode(WeatherLoading.Error(e.toString()))
-                        }
-
-                    }
-                }
-
             }
         }
     }
