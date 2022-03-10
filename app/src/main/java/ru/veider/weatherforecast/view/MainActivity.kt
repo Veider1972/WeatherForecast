@@ -23,8 +23,7 @@ class MainActivity : AppCompatActivity() {
 
         binder = MainActivityBinding.inflate(layoutInflater)
         setContentView(binder.root)
-        savedInstanceState
-            ?.let {}
+        savedInstanceState?.let {}
             .run {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.container, CitiesFragment())

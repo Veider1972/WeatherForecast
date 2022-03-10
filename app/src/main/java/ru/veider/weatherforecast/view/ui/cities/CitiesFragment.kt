@@ -22,14 +22,14 @@ import ru.veider.weatherforecast.databinding.CitiesFragmentBinding
 import ru.veider.weatherforecast.utils.*
 import ru.veider.weatherforecast.view.ui.weather.WeatherFragment
 import ru.veider.weatherforecast.repository.CitiesLoadingState
-import ru.veider.weatherforecast.viewmodel.WeatherViewModel
+import ru.veider.weatherforecast.viewmodel.CitiesViewModel
 
 class CitiesFragment : Fragment(),
     CitiesAdapter.OnCitySelected {
 
     private var _binder: CitiesFragmentBinding? = null
     private val binder get() = _binder!!
-    private val viewModel: WeatherViewModel by lazy { ViewModelProvider(this)[WeatherViewModel::class.java] }
+    private val viewModel: CitiesViewModel by lazy { ViewModelProvider(this)[CitiesViewModel::class.java] }
     private val locationManager: LocationManager by lazy { requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager }
     private var myWeatherQuery: WeatherQuery = WeatherQuery(
         "", 0.0, 0.0, Language.RU
@@ -41,7 +41,7 @@ class CitiesFragment : Fragment(),
         _binder = CitiesFragmentBinding.inflate(inflater)
         with(binder) {
             actionButton.setOnClickListener {
-                when (viewModel.dataLoading){
+                when (viewModel.dataLoading) {
                     DataLoading.RUSSIAN -> viewModel.dataLoading = DataLoading.FOREIGN
                     DataLoading.FOREIGN -> viewModel.dataLoading = DataLoading.RUSSIAN
                 }

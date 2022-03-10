@@ -2,29 +2,41 @@ package ru.veider.weatherforecast.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ru.veider.weatherforecast.data.DataLoading
-import ru.veider.weatherforecast.data.DataLoading.*
-import ru.veider.weatherforecast.repository.*
+import retrofit2.Callback
+import ru.veider.weatherforecast.data.WeatherData
+import ru.veider.weatherforecast.repository.WeatherDataSource
+import ru.veider.weatherforecast.repository.WeatherLoadingState
+import ru.veider.weatherforecast.repository.WeatherRepository
+import ru.veider.weatherforecast.repository.WeatherRepositoryImpl
+
+private const val SERVER_ERROR = "Ошибка сервера"
 
 class WeatherViewModel(
-    private val liveCitiesState: MutableLiveData<CitiesLoadingState> = MutableLiveData(),
-    private val citiesRepositoryImpl: CitiesRepository = CitiesRepositoryImpl()
+    val weatherLiveData: MutableLiveData<WeatherLoadingState> = MutableLiveData(),
+    private val weatherRepositoryImpl: WeatherRepository = WeatherRepositoryImpl(WeatherDataSource())
 ) : ViewModel() {
 
-    fun getCitiesData() = liveCitiesState
+    private val callback = object : Callback<WeatherData> {
 
-    fun getCitiesFromRemoteSource() = getCities()
+        override fun onFailure(call: retrofit2.Call<WeatherData>, t: Throwable) {
+            weatherLiveData.postValue(WeatherLoadingState.Error(t))
+        }
 
-    var dataLoading: DataLoading = RUSSIAN
-
-    private fun getCities() {
-        liveCitiesState.value = CitiesLoadingState.LoadingState
-        Thread {
-            liveCitiesState.postValue(
-                CitiesLoadingState.Success(
-                    citiesRepositoryImpl.getCitiesFromServer(dataLoading)
-                )
+        override fun onResponse(
+            call: retrofit2.Call<WeatherData>, response: retrofit2.Response<WeatherData>
+        ) {
+            weatherLiveData.postValue(
+                if (response.isSuccessful && response.body() != null) {
+                    WeatherLoadingState.Success(response.body()!!)
+                } else {
+                    WeatherLoadingState.Error(Throwable(SERVER_ERROR))
+                }
             )
-        }.start()
+        }
+    }
+
+    fun getWeatherFromRemoteSource(lat: Double, lon: Double) {
+        weatherLiveData.value = WeatherLoadingState.Loading
+        weatherRepositoryImpl.getWeatherFromSever(lat, lon, callback)
     }
 }

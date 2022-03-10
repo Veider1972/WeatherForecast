@@ -9,25 +9,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import com.google.gson.Gson
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.weather_fragment.*
-import okhttp3.*
-import ru.veider.weatherforecast.BuildConfig
 import ru.veider.weatherforecast.R
 import ru.veider.weatherforecast.data.DayTime
 import ru.veider.weatherforecast.data.WeatherData
 import ru.veider.weatherforecast.data.WeatherQuery
 import ru.veider.weatherforecast.databinding.WeatherFragmentBinding
 import ru.veider.weatherforecast.utils.showSnack
-import ru.veider.weatherforecast.utils.showToast
 import ru.veider.weatherforecast.utils.toLatString
 import ru.veider.weatherforecast.utils.toLonString
 import ru.veider.weatherforecast.repository.WeatherLoadingState
-import java.io.IOException
-import java.lang.Exception
+import ru.veider.weatherforecast.viewmodel.WeatherViewModel
 
-
-private const val REQUEST_API_KEY = "X-Yandex-API-Key"
 
 class WeatherFragment : Fragment() {
 
@@ -35,6 +31,7 @@ class WeatherFragment : Fragment() {
     private val binder get() = _binder!!
     private val handle = Handler(Looper.getMainLooper())
     private lateinit var weatherQuery: WeatherQuery
+    val weatherViewModel: WeatherViewModel by lazy { ViewModelProvider(this).get(WeatherViewModel::class.java) }
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
@@ -45,45 +42,12 @@ class WeatherFragment : Fragment() {
             weatherQuery = bundle?.getParcelable<WeatherQuery>("weather") as WeatherQuery
         }
         _binder = WeatherFragmentBinding.inflate(inflater)
-        getWeather()
+
+        weatherViewModel.weatherLiveData.observe(
+            viewLifecycleOwner,
+            Observer { setWeatherMode(it) })
+        weatherViewModel.getWeatherFromRemoteSource(weatherQuery.latitude, weatherQuery.longitude)
         return binder.root
-    }
-
-    //@RequiresApi(value = 24)
-    private fun getWeather() {
-        setWeatherMode(WeatherLoadingState.LoadingState)
-        val client = OkHttpClient()
-        val builder: Request.Builder = Request.Builder()
-            .apply {
-                header(REQUEST_API_KEY, BuildConfig.YANDEX_API_KEY)
-                url("https://api.weather.yandex.ru/v2/forecast?lat=${weatherQuery.latitude}&lon=${weatherQuery.longitude}&limit=1&hours=false&extra=false")
-            }
-        val request: Request = builder.build()
-        val call: Call = client.newCall(request)
-        call.enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                setWeatherMode(WeatherLoadingState.Error(e.toString()))
-                requireContext().showToast(getString(R.string.check_internet))
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) {
-                    //setWeatherMode(WeatherLoadingState.Error(response.))
-                    requireContext().showToast(getString(R.string.no_answer))
-                } else {
-                    try {
-                        val answer = response.body?.charStream()
-                        val weatherData: WeatherData = Gson().fromJson(
-                            answer, WeatherData::class.java
-                        )
-                        setWeatherMode(WeatherLoadingState.Success(weatherData))
-                    } catch (e: Exception) {
-                        setWeatherMode(WeatherLoadingState.Error(e.toString()))
-                        requireContext().showToast(getString(R.string.error) + ": " + e.toString())
-                    }
-                }
-            }
-        })
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -102,10 +66,12 @@ class WeatherFragment : Fragment() {
                         weatherView.showSnack(getString(R.string.error) + ": " + weatherLoadingState.error,
                             getString(R.string.reload),
                             {
-                                getWeather()
+                                weatherViewModel.getWeatherFromRemoteSource(
+                                    weatherQuery.latitude, weatherQuery.longitude
+                                )
                             })
                     }
-                    is WeatherLoadingState.LoadingState -> {
+                    is WeatherLoadingState.Loading -> {
                         weatherView.visibility = View.GONE
                         loadingLayout.visibility = View.VISIBLE
                     }
@@ -122,6 +88,9 @@ class WeatherFragment : Fragment() {
     private fun setData(weatherData: WeatherData) {
         with(binder) {
             with(weatherData) {
+                Picasso.get()
+                    .load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
+                    .into(background)
                 cityName.text = weatherData.geo_object?.district?.name
                     ?: weatherData.geo_object?.locality?.name ?: getString(R.string.error)
                 cityCoordinates.text = String.format(
@@ -129,6 +98,7 @@ class WeatherFragment : Fragment() {
                     weatherData.info?.latitude?.toLatString() ?: getString(R.string.error),
                     weatherData.info?.longitude?.toLonString() ?: getString(R.string.error)
                 )
+
                 conditions.setImageResource(
                     resources.getIdentifier(
                         fact?.condition?.getIcon(fact.daytime ?: DayTime.DAY),

@@ -38,3 +38,5 @@ fun Double.toLonString(): String {
     val seconds = ((abs(this) - abs(degree) - minutes / 60) * 60)
     return String.format("%+04d°%02d'%05.2f\"", degree, minutes, seconds)
 }
+
+const val TAG = "TAG"
