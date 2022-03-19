@@ -8,6 +8,7 @@ import kotlin.math.abs
 import kotlin.math.truncate
 
 const val REQUEST_PERMISSION_LOCATION = 99
+const val CITIES_KEY = "CITIES_KEY"
 
 fun View.showSnack(
     text: String,
