@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/default_margin"
+    android:background="@drawable/layout_decorator"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/default_margin">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/place"
+            style="@style/History.City"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Населённый пункт" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="12 октября 2022 г. 12:00"
+            android:textAlignment="center"
+            android:id="@+id/date_time"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/conditions"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:layout_weight="0"
+        android:src="@drawable/day_clear" />
+
+    <TextView
+        android:id="@+id/temp"
+        style="@style/History.Temperature"
+        android:layout_width="@dimen/history_temperature_width"
+        android:textAlignment="textEnd"
+        android:text="7" />
+
+    <TextView
+        style="@style/History.Temperature"
+        android:text="@string/celsius" />
+</LinearLayout>
