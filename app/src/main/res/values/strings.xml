@@ -23,6 +23,6 @@
     <string name="coordinates_by_gps">Координаты определены по GPS</string>
     <string name="coordinates_by_network">Координаты определены по сети</string>
     <string name="geolocation_permission">Для работы геолокации нужно дать приложению разрешение</string>
-    <string name="default_location_language">ru_RU</string>
+    <string name="default_location_language">RU</string>
     <string name="permission_granted">Разрешение получено</string>
 </resources>

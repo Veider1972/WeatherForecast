@@ -10,14 +10,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import ru.veider.weatherforecast.R
+import ru.veider.weatherforecast.data.DataLoading
+import ru.veider.weatherforecast.data.Language
 import ru.veider.weatherforecast.data.WeatherQuery
 import ru.veider.weatherforecast.databinding.CitiesFragmentBinding
 import ru.veider.weatherforecast.utils.*
@@ -33,7 +32,7 @@ class CitiesFragment : Fragment(),
     private val viewModel: WeatherViewModel by lazy { ViewModelProvider(this)[WeatherViewModel::class.java] }
     private val locationManager: LocationManager by lazy { requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager }
     private var myWeatherQuery: WeatherQuery = WeatherQuery(
-        "", 0.0, 0.0, "ru_RU"
+        "", 0.0, 0.0, Language.RU
     )
 
     override fun onCreateView(
@@ -41,12 +40,17 @@ class CitiesFragment : Fragment(),
     ): View {
         _binder = CitiesFragmentBinding.inflate(inflater)
         with(binder) {
-            actionButton.setOnClickListener { viewModel.getCitiesFromRemoteSource() }
+            actionButton.setOnClickListener {
+                when (viewModel.dataLoading){
+                    DataLoading.RUSSIAN -> viewModel.dataLoading = DataLoading.FOREIGN
+                    DataLoading.FOREIGN -> viewModel.dataLoading = DataLoading.RUSSIAN
+                }
+                viewModel.getCitiesFromRemoteSource()
+            }
             myPlace.setOnClickListener { chooseCity(myWeatherQuery) }
         }
         with(viewModel) {
-            getCitiesData().observe(this@CitiesFragment.viewLifecycleOwner,
-                Observer<CitiesLoading> { getCitiesData(it) })
+            getCitiesData().observe(this@CitiesFragment.viewLifecycleOwner) { getCitiesData(it) }
             getCitiesFromRemoteSource()
         }
         binder.citiesRecyclerView.layoutManager = LinearLayoutManager(this.context)
@@ -112,14 +116,16 @@ class CitiesFragment : Fragment(),
                 getString(R.string.my_place),
                 location.latitude,
                 location.longitude,
-                getString(R.string.default_location_language)
+                Language.valueOf(
+                    getString(R.string.default_location_language)
+                )
             ).also {
                 with(binder) {
                     myPlaceCity.text = it.name
                     myPlaceCoordinates.text = String.format(
                         getString(R.string.coordinates),
                         it.latitude.toLatString(),
-                        it.longitude.toLonString()
+                        it.latitude.toLonString()
                     )
                     myPlace.visibility = View.VISIBLE
                 }
@@ -155,9 +161,9 @@ class CitiesFragment : Fragment(),
     }
 
     override fun chooseCity(weatherQuery: WeatherQuery) {
-        val weatherFragment = WeatherFragment().also {
-            it.arguments = Bundle().also {
-                it.putParcelable("weather", weatherQuery)
+        val weatherFragment = WeatherFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable("weather", weatherQuery)
             }
         }
         parentFragmentManager.beginTransaction()

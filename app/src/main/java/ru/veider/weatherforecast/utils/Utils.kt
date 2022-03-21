@@ -3,7 +3,6 @@ package ru.veider.weatherforecast.utils
 import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
-import ru.veider.weatherforecast.view.ui.weather.WeatherFragment
 import kotlin.math.abs
 import kotlin.math.truncate
 

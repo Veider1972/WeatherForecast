@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.veider.weatherforecast.R
+import ru.veider.weatherforecast.data.Language
 import ru.veider.weatherforecast.data.WeatherQuery
 import ru.veider.weatherforecast.databinding.CityBinding
 import ru.veider.weatherforecast.utils.toLatString
@@ -28,7 +29,7 @@ class CitiesAdapter(
     ) {
         holder.onBind(cities[position].apply {
             WeatherQuery(
-                name, latitude, longitude, "ru_RU"
+                name, latitude, longitude, Language.RU
             )
         })
     }
@@ -60,7 +61,6 @@ class CitiesAdapter(
                     weatherQuery.longitude.toLonString()
                 )
             }
-
         }
     }
 }
