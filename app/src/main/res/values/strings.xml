@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Прогноз погоды</string>
     <string name="error">Ошибка</string>
-    <string name="reload">Обновление</string>
+    <string name="reload">Обновить</string>
     <string name="celsius">°С</string>
     <string name="by_feelings">По ощущениям\u0020</string>
     <string name="mm">мм</string>
@@ -22,4 +22,7 @@
     <string name="my_place">Моё место</string>
     <string name="coordinates_by_gps">Координаты определены по GPS</string>
     <string name="coordinates_by_network">Координаты определены по сети</string>
+    <string name="geolocation_permission">Для работы геолокации нужно дать приложению разрешение</string>
+    <string name="default_location_language">ru_RU</string>
+    <string name="permission_granted">Разрешение получено</string>
 </resources>

@@ -6,7 +6,10 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class WeatherQuery(
-    var name: String, var latitude: Double, var longitude: Double, var language: Language,
+    var name: String,
+    var latitude: Double,
+    var longitude: Double,
+    var language: Language,
     val key: String = "b5eedce9-6c9a-44aa-8019-e78fa1b018e7" // ключ разработчика
 ) : Parcelable {
     constructor(
@@ -92,9 +95,21 @@ data class Fact(
     val obs_time: Long          // Время замера погодных данных в формате Unixtime. Число
 ) {
     constructor(
-        temp: Int, feels_like: Int, temp_water: Int?, icon: String, condition: String,
-        wind_speed: Double, wind_gust: Double, wind_dir: String, pressure_mm: Int, pressure_pa: Int,
-        humidity: Int, daytime: String, polar: Boolean, season: String, obs_time: Long
+        temp: Int,
+        feels_like: Int,
+        temp_water: Int?,
+        icon: String,
+        condition: String,
+        wind_speed: Double,
+        wind_gust: Double,
+        wind_dir: String,
+        pressure_mm: Int,
+        pressure_pa: Int,
+        humidity: Int,
+        daytime: String,
+        polar: Boolean,
+        season: String,
+        obs_time: Long
     ) : this(
         temp,
         feels_like,
@@ -145,8 +160,14 @@ data class Forecast(
     val parts: Array<Parts>      // Прогнозы по времени суток
 ) {
     constructor(
-        date: String, date_ts: Long, week: Int, sunrise: String, sunset: String, moon_code: Int,
-        moon_text: String, parts: Array<Parts>
+        date: String,
+        date_ts: Long,
+        week: Int,
+        sunrise: String,
+        sunset: String,
+        moon_code: Int,
+        moon_text: String,
+        parts: Array<Parts>
     ) : this(date, date_ts, week, sunrise, sunset, moon_code, MoonText.fromString(moon_text), parts)
 }
 
@@ -184,10 +205,24 @@ data class Parts(
     val prec_prob: Int,          // Вероятность выпадения осадков. Число
 ) {
     constructor(
-        part_name: String, temp_min: Int, temp_max: Int, temp_avg: Int, feels_like: Int,
-        icon: String, condition: String, daytime: String, polar: Boolean, wind_speed: Double,
-        wind_gust: Double, wind_dir: String, pressure_mm: Int, pressure_pa: Int, humidity: Int,
-        prec_mm: Int, prec_period: Int, prec_prob: Int
+        part_name: String,
+        temp_min: Int,
+        temp_max: Int,
+        temp_avg: Int,
+        feels_like: Int,
+        icon: String,
+        condition: String,
+        daytime: String,
+        polar: Boolean,
+        wind_speed: Double,
+        wind_gust: Double,
+        wind_dir: String,
+        pressure_mm: Int,
+        pressure_pa: Int,
+        humidity: Int,
+        prec_mm: Int,
+        prec_period: Int,
+        prec_prob: Int
     ) : this(
         PartName.fromString(part_name),
         temp_min,
@@ -445,49 +480,31 @@ enum class Condition(val str: String) {
 
 enum class WindDir(val str: String) {
     NORD_WEST("nw") {    // северо-западное
-        override fun getDirection(): String {
-            return "down-right"
-        }
+        override fun getDirection() = "down-right"
     },
     NORD("n") {          // северное
-        override fun getDirection(): String {
-            return "down"
-        }
+        override fun getDirection() = "down"
     },
     NORD_EAST("ne") {    // северо-восточное
-        override fun getDirection(): String {
-            return "down-left"
-        }
+        override fun getDirection() = "down-left"
     },
     EAST("e") {          // восточное
-        override fun getDirection(): String {
-            return "left"
-        }
+        override fun getDirection() = "left"
     },
     SOUTH_EAST("se") {   // юго-восточное
-        override fun getDirection(): String {
-            return "up-left"
-        }
+        override fun getDirection() = "up-left"
     },
     SOUTH("s") {         // южное
-        override fun getDirection(): String {
-            return "up"
-        }
+        override fun getDirection() = "up"
     },
     SOUTH_WEST("sw") {   // юго-западное
-        override fun getDirection(): String {
-            return "up-right"
-        }
+        override fun getDirection() = "up-right"
     },
     WEST("w") {          // западное
-        override fun getDirection(): String {
-            return "right"
-        }
+        override fun getDirection() = "right"
     },
     CALM("с") {           // штиль
-        override fun getDirection(): String {
-            return "calm"
-        }
+        override fun getDirection() = "calm"
     };
 
     abstract fun getDirection(): String
@@ -544,88 +561,55 @@ enum class Season(val str: String) {
     }
 }
 
-
 enum class MoonText(val str: String) {
     MOON_CODE_0("moon-code-0") {        //  полнолуние
-        override fun getIcon(): String {
-            return "moon-00"
-        }
-    },     // полнолуние
+        override fun getIcon() = "moon-00"
+    },
     MOON_CODE_1("moon-code-1") {        // убывающая луна
-        override fun getIcon(): String {
-            return "moon-01"
-        }
-    },     // убывающая луна
+        override fun getIcon() = "moon-01"
+    },
     MOON_CODE_2("moon-code-2") {        // убывающая луна
-        override fun getIcon(): String {
-            return "moon-02"
-        }
-    },     // убывающая луна
+        override fun getIcon() = "moon-02"
+    },
     MOON_CODE_3("moon-code-3") {        // убывающая луна
-        override fun getIcon(): String {
-            return "moon-03"
-        }
-    },     // убывающая луна
+        override fun getIcon() = "moon-03"
+    },
     MOON_CODE_4("moon-code-4") {        // последняя четверть
-        override fun getIcon(): String {
-            return "moon-04"
-        }
-    },     // последняя четверть
+        override fun getIcon() = "moon-04"
+    },
     MOON_CODE_5("moon-code-5") {        // убывающая луна
-        override fun getIcon(): String {
-            return "moon-05"
-        }
-    },     // убывающая луна
+        override fun getIcon() = "moon-05"
+    },
     MOON_CODE_6("moon-code-6") {        // убывающая луна
-        override fun getIcon(): String {
-            return "moon-06"
-        }
-    },     // убывающая луна
+        override fun getIcon() = "moon-06"
+    },
     MOON_CODE_7("moon-code-7") {        // убывающая луна
-        override fun getIcon(): String {
-            return "moon-07"
-        }
-    },     // убывающая луна
+        override fun getIcon() = "moon-07"
+    },
     MOON_CODE_8("moon-code-8") {        // новолуние
-        override fun getIcon(): String {
-            return "moon-08"
-        }
-    },     // новолуние
+        override fun getIcon() = "moon-08"
+    },
     MOON_CODE_9("moon-code-9") {        // растущая луна
-        override fun getIcon(): String {
-            return "moon-09"
-        }
-    },     // растущая луна
+        override fun getIcon() = "moon-09"
+    },
     MOON_CODE_10("moon-code-10") {        // растущая луна
-        override fun getIcon(): String {
-            return "moon-10"
-        }
-    },   // растущая луна
+        override fun getIcon() = "moon-10"
+    },
     MOON_CODE_11("moon-code-11") {        // растущая луна
-        override fun getIcon(): String {
-            return "moon-11"
-        }
-    },   // растущая луна
+        override fun getIcon() = "moon-11"
+    },
     MOON_CODE_12("moon-code-12") {        // первая четверть
-        override fun getIcon(): String {
-            return "moon-12"
-        }
-    },   // первая четверть
+        override fun getIcon() = "moon-12"
+    },
     MOON_CODE_13("moon-code-13") {        // растущая луна
-        override fun getIcon(): String {
-            return "moon-13"
-        }
-    },   // растущая луна
+        override fun getIcon() = "moon-13"
+    },
     MOON_CODE_14("moon-code-14") {        // растущая луна
-        override fun getIcon(): String {
-            return "moon-14"
-        }
-    },   // растущая луна
+        override fun getIcon() = "moon-14"
+    },
     MOON_CODE_15("moon-code-15") {        // растущая луна
-        override fun getIcon(): String {
-            return "moon-15"
-        }
-    };    // растущая луна
+        override fun getIcon() = "moon-15"
+    };
 
     abstract fun getIcon(): String
 
@@ -656,24 +640,16 @@ enum class MoonText(val str: String) {
 
 enum class PartName(val str: String) {
     NIGHT("night") {
-        override fun getValue(): String {
-            return "ночь"
-        }
+        override fun getValue() = "ночь"
     },         // ночь.
     MORNING("morning") {
-        override fun getValue(): String {
-            return "утро"
-        }
+        override fun getValue() = "утро"
     },     // утро.
     DAY("day") {
-        override fun getValue(): String {
-            return "день"
-        }
+        override fun getValue() = "день"
     },             // день.
     EVENING("evening") {
-        override fun getValue(): String {
-            return "вечер"
-        }
+        override fun getValue() = "вечер"
     };      // вечер.
 
     abstract fun getValue(): String

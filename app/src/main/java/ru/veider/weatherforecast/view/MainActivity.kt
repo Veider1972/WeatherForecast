@@ -14,7 +14,7 @@ import ru.veider.weatherforecast.view.ui.cities.CitiesFragment
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binder : MainActivityBinding
+    private lateinit var binder: MainActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,15 +25,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(binder.root)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, CitiesFragment()).commitNow()
+                .replace(R.id.container, CitiesFragment())
+                .commitNow()
         }
     }
 
     private fun checkPermissionForLocation(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this.applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                true
-            } else {
+            if (ContextCompat.checkSelfPermission(
+                    this.applicationContext, Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) true
+            else {
                 // Show the permission request
                 ActivityCompat.requestPermissions(
                     this,
@@ -42,8 +45,6 @@ class MainActivity : AppCompatActivity() {
                 )
                 false
             }
-        } else {
-            true
-        }
+        } else true
     }
 }

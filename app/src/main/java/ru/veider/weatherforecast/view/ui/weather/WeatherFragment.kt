@@ -12,15 +12,21 @@ import ru.veider.weatherforecast.R
 import ru.veider.weatherforecast.data.WeatherData
 import ru.veider.weatherforecast.data.WeatherQuery
 import ru.veider.weatherforecast.databinding.WeatherFragmentBinding
-import ru.veider.weatherforecast.utils.Utils
+import ru.veider.weatherforecast.utils.showSnack
+import ru.veider.weatherforecast.utils.toLatString
+import ru.veider.weatherforecast.utils.toLonString
 import ru.veider.weatherforecast.viewmodel.WeatherLoading
 import ru.veider.weatherforecast.viewmodel.WeatherViewModel
 
-class WeatherFragment : Fragment(), Utils {
+class WeatherFragment : Fragment() {
 
     private var _binder: WeatherFragmentBinding? = null
     private val binder get() = _binder!!
-    private lateinit var weatherViewModel: WeatherViewModel
+    private val weatherViewModel: WeatherViewModel by lazy {
+        ViewModelProvider(this).get(
+            WeatherViewModel::class.java
+        )
+    }
     private lateinit var weatherQuery: WeatherQuery
 
     override fun onCreateView(
@@ -31,34 +37,34 @@ class WeatherFragment : Fragment(), Utils {
             weatherQuery = bundle?.getParcelable<WeatherQuery>("weather") as WeatherQuery
         }
         _binder = WeatherFragmentBinding.inflate(inflater)
-        val citiesView = binder.root
-        weatherViewModel = ViewModelProvider(this)[WeatherViewModel::class.java]
         val weatherData = Observer<WeatherLoading> { getWeatherData(it) }
-        weatherViewModel.getWeatherData().observe(this.viewLifecycleOwner, weatherData)
-        weatherViewModel.getWeatherFromLocalSource()
-        return citiesView
+        with(weatherViewModel) {
+            getWeatherData().observe(this@WeatherFragment.viewLifecycleOwner, weatherData)
+            getWeatherFromLocalSource()
+        }
+
+        return binder.root
     }
 
     private fun getWeatherData(weatherLoading: WeatherLoading) {
-        when (weatherLoading) {
-            is WeatherLoading.Success -> {
-                val weatherData = weatherLoading.weatherData
-                binder.loadingLayout.visibility = View.GONE
-                binder.weatherView.visibility = View.VISIBLE
-                setData(weatherData)
-            }
-            is WeatherLoading.Error -> {
-                binder.weatherView.visibility = View.GONE
-                binder.loadingLayout.visibility = View.GONE
-                Snackbar.make(
-                    binder.weatherView, getString(R.string.error), Snackbar.LENGTH_INDEFINITE
-                ).setAction(getString(R.string.reload)) {
-                    weatherViewModel.getWeatherFromLocalSource()
-                }.show()
-            }
-            is WeatherLoading.Loading -> {
-                binder.weatherView.visibility = View.GONE
-                binder.loadingLayout.visibility = View.VISIBLE
+        with(binder) {
+            when (weatherLoading) {
+                is WeatherLoading.Success -> {
+                    loadingLayout.visibility = View.GONE
+                    weatherView.visibility = View.VISIBLE
+                    setData(weatherLoading.weatherData)
+                }
+                is WeatherLoading.Error -> {
+                    weatherView.visibility = View.GONE
+                    loadingLayout.visibility = View.GONE
+                    weatherView.showSnack(getString(R.string.error),
+                        getString(R.string.reload),
+                        { weatherViewModel.getWeatherFromLocalSource() })
+                }
+                is WeatherLoading.Loading -> {
+                    weatherView.visibility = View.GONE
+                    loadingLayout.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -69,22 +75,30 @@ class WeatherFragment : Fragment(), Utils {
     }
 
     private fun setData(weatherData: WeatherData) {
-        binder.cityName.text = weatherQuery.name
-        binder.temp.text = weatherData.fact.temp.toString()
-        binder.sunrise.text = weatherData.forecast.sunrise
-        binder.sunset.text = weatherData.forecast.sunset
-        binder.temperatureFeels.text = weatherData.fact.feels_like.toString()
-        binder.windDirection.setImageResource(
-            resources.getIdentifier(
-                weatherData.fact.wind_dir.getDirection(), "drawable", requireActivity().packageName
+        with(binder) {
+            with(weatherData) {
+                cityName.text = weatherQuery.name
+                cityCoordinates.text = String.format(
+                    getString(R.string.coordinates),
+                    weatherQuery.latitude.toLatString(),
+                    weatherQuery.longitude.toLonString()
+                )
+                temp.text = fact.temp.toString()
+                sunrise.text = forecast.sunrise
+                sunset.text = forecast.sunset
+                temperatureFeels.text = fact.feels_like.toString()
+                pressure.text = fact.pressure_mm.toString()
+                moisture.text = fact.humidity.toString()
+                waterTemperature.text = if (fact.temp_water != null) fact.temp_water.toString() else "-"
+                windDirection.setImageResource(
+                    resources.getIdentifier(
+                        fact.wind_dir.getDirection(), "drawable", requireActivity().packageName
+                    )
+                )
+            }
+            forecastListView.adapter = WeatherAdapter(
+                this@WeatherFragment, weatherData.forecast.parts
             )
-        )
-        binder.pressure.text = weatherData.fact.pressure_mm.toString()
-        binder.humidity.text = weatherData.fact.humidity.toString()
-        binder.waterTemperature.text =
-            if (weatherData.fact.temp_water != null) weatherData.fact.temp_water.toString() else "-"
-        val weatherListView = binder.forecastListView
-        val weatherAdapter = WeatherAdapter(this, weatherData.forecast.parts)
-        weatherListView.adapter = weatherAdapter
+        }
     }
 }
