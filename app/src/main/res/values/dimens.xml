@@ -15,6 +15,7 @@
     <dimen name="forecast_first_temperature_padding">-8sp</dimen>
     <dimen name="forecast_first_attr_size">10sp</dimen>
     <dimen name="forecast_first_feelings_size">11sp</dimen>
+    <dimen name="forecast_background_picture_height">150sp</dimen>
     <dimen name="forecast_second_numbers_size">17sp</dimen>
     <dimen name="forecast_second_numbers_desc_size">15sp</dimen>
     <dimen name="forecast_second_numbers_desc_margin">4sp</dimen>

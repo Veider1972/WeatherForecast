@@ -1,5 +1,6 @@
 package ru.veider.weatherforecast.utils
 
+import android.content.Context
 import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
@@ -19,8 +20,8 @@ fun View.showSnack(
         .show()
 }
 
-fun View.showToast(text: String) {
-    Toast.makeText(this.context, text, Toast.LENGTH_LONG)
+fun Context.showToast(text: String) {
+    Toast.makeText(this, text, Toast.LENGTH_LONG)
         .show()
 }
 
@@ -37,3 +38,5 @@ fun Double.toLonString(): String {
     val seconds = ((abs(this) - abs(degree) - minutes / 60) * 60)
     return String.format("%+04d°%02d'%05.2f\"", degree, minutes, seconds)
 }
+
+const val TAG = "TAG"
