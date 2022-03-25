@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.weather_fragment.*
 import ru.veider.weatherforecast.R
-import ru.veider.weatherforecast.data.DayTime
 import ru.veider.weatherforecast.data.WeatherData
 import ru.veider.weatherforecast.data.WeatherQuery
 import ru.veider.weatherforecast.databinding.WeatherFragmentBinding
@@ -31,7 +30,7 @@ class WeatherFragment : Fragment() {
     private val binder get() = _binder!!
     private val handle = Handler(Looper.getMainLooper())
     private lateinit var weatherQuery: WeatherQuery
-    val weatherViewModel: WeatherViewModel by lazy { ViewModelProvider(this).get(WeatherViewModel::class.java) }
+    private val weatherViewModel: WeatherViewModel by lazy { ViewModelProvider(this)[WeatherViewModel::class.java] }
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
@@ -91,28 +90,27 @@ class WeatherFragment : Fragment() {
                 Picasso.get()
                     .load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
                     .into(background)
-                cityName.text = weatherData.geo_object?.district?.name
-                    ?: weatherData.geo_object?.locality?.name ?: getString(R.string.error)
+                cityName.text = weatherData.geo_object.district.name
                 cityCoordinates.text = String.format(
                     getString(R.string.coordinates),
-                    weatherData.info?.latitude?.toLatString() ?: getString(R.string.error),
-                    weatherData.info?.longitude?.toLonString() ?: getString(R.string.error)
+                    weatherData.info.latitude.toLatString(),
+                    weatherData.info.longitude.toLonString()
                 )
 
                 conditions.setImageResource(
                     resources.getIdentifier(
-                        fact?.condition?.getIcon(fact.daytime ?: DayTime.DAY),
+                        fact.condition.getIcon(fact.daytime),
                         "drawable",
                         requireActivity().packageName
                     )
                 )
-                temp.text = fact?.temp?.toString()
-                temperatureFeels.text = fact?.feels_like.toString()
-                windSpeed.text = fact?.wind_speed.toString()
-                pressure.text = fact?.pressure_mm.toString()
-                moisture.text = fact?.humidity.toString()
+                temp.text = fact.temp.toString()
+                temperatureFeels.text = fact.feels_like.toString()
+                windSpeed.text = fact.wind_speed.toString()
+                pressure.text = fact.pressure_mm.toString()
+                moisture.text = fact.humidity.toString()
 
-                if (fact?.temp_water != null) {
+                if (fact.temp_water != null) {
                     waterTemperature.text = fact.temp_water.toString()
                     water_view.visibility = View.VISIBLE
                 } else {
@@ -121,7 +119,7 @@ class WeatherFragment : Fragment() {
 
                 windDirection.setImageResource(
                     resources.getIdentifier(
-                        fact?.wind_dir?.getDirection(), "drawable", requireActivity().packageName
+                        fact.wind_dir.getDirection(), "drawable", requireActivity().packageName
                     )
                 )
             }

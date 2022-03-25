@@ -4,10 +4,17 @@ import android.content.Context
 import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
+import java.util.*
 import kotlin.math.abs
 import kotlin.math.truncate
 
 const val REQUEST_PERMISSION_LOCATION = 99
+const val CITIES_KEY = "CITIES_KEY"
+
+const val deltaTime : Int = 30 // Время хранения кэша погоды в минутах
+fun getCleanedTime():Long{
+    return System.currentTimeMillis()/1000L - deltaTime*60
+}
 
 fun View.showSnack(
     text: String,

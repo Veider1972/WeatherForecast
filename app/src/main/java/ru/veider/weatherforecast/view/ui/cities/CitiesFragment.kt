@@ -7,13 +7,16 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.*
 import ru.veider.weatherforecast.R
 import ru.veider.weatherforecast.data.DataLoading
 import ru.veider.weatherforecast.data.Language
@@ -22,6 +25,7 @@ import ru.veider.weatherforecast.databinding.CitiesFragmentBinding
 import ru.veider.weatherforecast.utils.*
 import ru.veider.weatherforecast.view.ui.weather.WeatherFragment
 import ru.veider.weatherforecast.repository.CitiesLoadingState
+import ru.veider.weatherforecast.view.WeatherApplication
 import ru.veider.weatherforecast.viewmodel.CitiesViewModel
 
 class CitiesFragment : Fragment(),
@@ -41,9 +45,13 @@ class CitiesFragment : Fragment(),
         _binder = CitiesFragmentBinding.inflate(inflater)
         with(binder) {
             actionButton.setOnClickListener {
-                when (viewModel.dataLoading) {
-                    DataLoading.RUSSIAN -> viewModel.dataLoading = DataLoading.FOREIGN
-                    DataLoading.FOREIGN -> viewModel.dataLoading = DataLoading.RUSSIAN
+                viewModel.dataLoading = if (viewModel.dataLoading == DataLoading.RUSSIAN) DataLoading.FOREIGN else DataLoading.RUSSIAN
+                GlobalScope.launch {
+                    PreferenceManager.getDefaultSharedPreferences(WeatherApplication.getInstance())
+                        .edit {
+                            putBoolean(CITIES_KEY, if (viewModel.dataLoading == DataLoading.RUSSIAN) true else false)
+                            apply()
+                        }
                 }
                 viewModel.getCitiesFromRemoteSource()
             }

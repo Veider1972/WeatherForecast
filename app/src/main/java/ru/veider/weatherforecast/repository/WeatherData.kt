@@ -57,55 +57,55 @@ fun getForeignCities(): Array<WeatherQuery> {
 
 
 data class WeatherData(
-    @SerializedName("now") val now: Long?,                     // Время сервера в формате Unixtime. Число
-    @SerializedName("info") val info: Info?,                   // Объект информации о населенном пункте. Объект
-    @SerializedName("geo_object") val geo_object: GeoObject?,  // Местоположение
-    @SerializedName("fact") val fact: Fact?                   // Объект фактической информации о погоде. Объект
+    @SerializedName("now") val now: Long,                     // Время сервера в формате Unixtime. Число
+    @SerializedName("info") val info: Info,                   // Объект информации о населенном пункте. Объект
+    @SerializedName("geo_object") val geo_object: GeoObject,  // Местоположение
+    @SerializedName("fact") val fact: Fact                   // Объект фактической информации о погоде. Объект
 )
 
 data class Info(
-    @SerializedName("lat") val latitude: Double?,    // Широта (в градусах). Число
-    @SerializedName("lon") val longitude: Double?,   // Долгота (в градусах). Число
+    @SerializedName("lat") val latitude: Double,    // Широта (в градусах). Число
+    @SerializedName("lon") val longitude: Double,   // Долгота (в градусах). Число
 )
 
 data class GeoObject(
-    @SerializedName("district") val district: District?,    // Район
-    @SerializedName("locality") val locality: Locality?,    // Область
-    @SerializedName("province") val province: Province?,    // Субьект
-    @SerializedName("country") val country: Country?        // Страна
+    @SerializedName("district") val district: District,    // Район
+    @SerializedName("locality") val locality: Locality,    // Область
+    @SerializedName("province") val province: Province,    // Субьект
+    @SerializedName("country") val country: Country        // Страна
 )
 
 data class District(
-    val id: Int?, val name: String?
+    val id: Int, val name: String
 )
 
 data class Locality(
-    val id: Int?, val name: String?
+    val id: Int, val name: String
 )
 
 data class Province(
-    val id: Int?, val name: String?
+    val id: Int, val name: String
 )
 
 data class Country(
-    val id: Int?, val name: String?
+    val id: Int, val name: String
 )
 
 data class Fact(
-    @SerializedName("temp") val temp: Int?,                 // Температура (°C)
-    @SerializedName("feels_like") val feels_like: Int?,     // Ощущаемая температура (°C)
+    @SerializedName("temp") val temp: Int,                 // Температура (°C)
+    @SerializedName("feels_like") val feels_like: Int,     // Ощущаемая температура (°C)
     @SerializedName("temp_water") val temp_water: Int?,     // Температура воды (°C). Параметр возвращается для там, где данная информация актуальна
-    @SerializedName("condition") val condition: Condition?, // Код расшифровки погодного описания
-    @SerializedName("wind_speed") val wind_speed: Double?,  // Скорость ветра (в м/с). Число
-    @SerializedName("wind_dir") val wind_dir: WindDir?,     // Направление ветра.
-    @SerializedName("pressure_mm") val pressure_mm: Int?,   // Давление (в мм рт.ст.). Число
-    @SerializedName("humidity") val humidity: Int?,         // Влажность воздуха (в процентах). Число
-    @SerializedName("daytime") val daytime: DayTime?,       // Светлое или темное время суток.
+    @SerializedName("condition") val condition: Condition, // Код расшифровки погодного описания
+    @SerializedName("wind_speed") val wind_speed: Double,  // Скорость ветра (в м/с). Число
+    @SerializedName("wind_dir") val wind_dir: WindDir,     // Направление ветра.
+    @SerializedName("pressure_mm") val pressure_mm: Int,   // Давление (в мм рт.ст.). Число
+    @SerializedName("humidity") val humidity: Int,         // Влажность воздуха (в процентах). Число
+    @SerializedName("daytime") val daytime: DayTime,       // Светлое или темное время суток.
 )
 
-enum class Condition {
+enum class Condition(val value: Int) {
     @SerializedName("clear")
-    CLEAR {                                     // ясно
+    CLEAR(0) {                                     // ясно
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_clear"
@@ -115,7 +115,7 @@ enum class Condition {
     },
 
     @SerializedName("partly-cloudy")
-    PARTLY_CLOUDY {                     // малооблачно
+    PARTLY_CLOUDY(1) {                     // малооблачно
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_partly_cloudy"
@@ -125,7 +125,7 @@ enum class Condition {
     },
 
     @SerializedName("cloudy")
-    CLOUDY {                                   // облачно с прояснениями
+    CLOUDY(2) {                                   // облачно с прояснениями
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_cloudy"
@@ -135,7 +135,7 @@ enum class Condition {
     },
 
     @SerializedName("overcast")
-    OVERCAST {                               // пасмурно
+    OVERCAST(3) {                               // пасмурно
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_overcast"
@@ -145,7 +145,7 @@ enum class Condition {
     },
 
     @SerializedName("drizzle")
-    DRIZZLE {                                 // морось
+    DRIZZLE(4) {                                 // морось
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_drizzle"
@@ -155,7 +155,7 @@ enum class Condition {
     },
 
     @SerializedName("light-rain")
-    LIGHT_RAIN {                           // небольшой дождь.
+    LIGHT_RAIN(5) {                           // небольшой дождь.
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_light_rain"
@@ -165,7 +165,7 @@ enum class Condition {
     },
 
     @SerializedName("rain")
-    RAIN {                                       // дождь
+    RAIN(6) {                                       // дождь
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_rain"
@@ -175,7 +175,7 @@ enum class Condition {
     },
 
     @SerializedName("moderate-rain")
-    MODERATE_RAIN {                     // умеренно сильный дождь
+    MODERATE_RAIN(7) {                     // умеренно сильный дождь
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_moderate_rain"
@@ -185,7 +185,7 @@ enum class Condition {
     },
 
     @SerializedName("heavy-rain")
-    HEAVY_RAIN {                           // сильный дождь
+    HEAVY_RAIN(8) {                           // сильный дождь
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_moderate_rain"
@@ -195,7 +195,7 @@ enum class Condition {
     },
 
     @SerializedName("continuous-heavy-rain")
-    CONTINUOUS_HEAVY_RAIN {                // длительный сильный дождь
+    CONTINUOUS_HEAVY_RAIN(9) {                // длительный сильный дождь
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_moderate_rain"
@@ -205,7 +205,7 @@ enum class Condition {
     },
 
     @SerializedName("showers")
-    SHOWERS {                                  // ливень
+    SHOWERS(10) {                                  // ливень
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_shower"
@@ -215,7 +215,7 @@ enum class Condition {
     },
 
     @SerializedName("wet-snow")
-    WET_SNOW {                               // дождь со снегом
+    WET_SNOW(11) {                               // дождь со снегом
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_snow"
@@ -225,7 +225,7 @@ enum class Condition {
     },
 
     @SerializedName("light-snow")
-    LIGHT_SNOW {                           // небольшой снег
+    LIGHT_SNOW(12) {                           // небольшой снег
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_snow"
@@ -235,7 +235,7 @@ enum class Condition {
     },
 
     @SerializedName("snow")
-    SNOW {                                       // снег
+    SNOW(13) {                                       // снег
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_snow"
@@ -245,7 +245,7 @@ enum class Condition {
     },
 
     @SerializedName("snow-showers")
-    SNOW_SHOWERS {                       // снегопад
+    SNOW_SHOWERS(14) {                       // снегопад
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_snow"
@@ -255,7 +255,7 @@ enum class Condition {
     },
 
     @SerializedName("hail")
-    HAIL {                                       // град
+    HAIL(15) {                                       // град
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_hail"
@@ -265,7 +265,7 @@ enum class Condition {
     },
 
     @SerializedName("thunderstorm")
-    THUNDERSTORM {                       // гроза
+    THUNDERSTORM(16) {                       // гроза
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_thunderstorm"
@@ -275,7 +275,7 @@ enum class Condition {
     },
 
     @SerializedName("thunderstorm-with-rain")
-    THUNDERSTORM_WITH_RAIN {   // дождь с грозой
+    THUNDERSTORM_WITH_RAIN(17) {   // дождь с грозой
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_thunderstorm_with_rain"
@@ -285,7 +285,7 @@ enum class Condition {
     },
 
     @SerializedName("thunderstorm-with-hail")
-    THUNDERSTORM_WITH_HAIL {    // гроза с градом
+    THUNDERSTORM_WITH_HAIL(18) {    // гроза с градом
         override fun getIcon(dayTime: DayTime): String {
             return when (dayTime) {
                 DayTime.DAY -> "day_hail"
@@ -295,63 +295,103 @@ enum class Condition {
     };
 
     abstract fun getIcon(dayTime: DayTime): String
+    fun fromInt(value: Int): Condition {
+        return when (value) {
+            1 -> PARTLY_CLOUDY
+            2 -> CLOUDY
+            3 -> OVERCAST
+            4 -> DRIZZLE
+            5 -> LIGHT_RAIN
+            6 -> RAIN
+            7 -> MODERATE_RAIN
+            8 -> HEAVY_RAIN
+            9 -> CONTINUOUS_HEAVY_RAIN
+            10 -> SHOWERS
+            11 -> WET_SNOW
+            12 -> LIGHT_SNOW
+            13 -> SNOW
+            14 -> SNOW_SHOWERS
+            15 -> HAIL
+            16 -> THUNDERSTORM
+            17 -> THUNDERSTORM_WITH_RAIN
+            18 -> THUNDERSTORM_WITH_HAIL
+            else -> CLEAR
+        }
+    }
 }
 
-enum class WindDir {
+enum class WindDir(val value: Int) {
     @SerializedName("nw")
-    NORD_WEST {    // северо-западное
+    NORD_WEST(0) {    // северо-западное
         override fun getDirection() = "direction_down_right"
     },
 
     @SerializedName("n")
-    NORD {          // северное
+    NORD(1) {          // северное
         override fun getDirection() = "direction_down"
     },
 
     @SerializedName("ne")
-    NORD_EAST {    // северо-восточное
+    NORD_EAST(2) {    // северо-восточное
         override fun getDirection() = "direction_down_left"
     },
 
     @SerializedName("e")
-    EAST {          // восточное
+    EAST(3) {          // восточное
         override fun getDirection() = "direction_left"
     },
 
     @SerializedName("se")
-    SOUTH_EAST {   // юго-восточное
+    SOUTH_EAST(4) {   // юго-восточное
         override fun getDirection() = "direction_up_left"
     },
 
     @SerializedName("s")
-    SOUTH {         // южное
+    SOUTH(5) {         // южное
         override fun getDirection() = "direction_up"
     },
 
     @SerializedName("sw")
-    SOUTH_WEST {   // юго-западное
+    SOUTH_WEST(6) {   // юго-западное
         override fun getDirection() = "direction_up_right"
     },
 
     @SerializedName("w")
-    WEST {          // западное
+    WEST(7) {          // западное
         override fun getDirection() = "direction_right"
     },
 
     @SerializedName("c")
-    CALM {           // штиль
+    CALM(8) {           // штиль
         override fun getDirection() = "direction_calm"
     };
 
     abstract fun getDirection(): String
+//    fun fromInt(value: Int): WindDir {
+//        return when (value) {
+//            0 -> NORD_WEST
+//            1 -> NORD
+//            2 -> NORD_EAST
+//            3 -> EAST
+//            4 -> SOUTH_EAST
+//            5 -> SOUTH
+//            6 -> SOUTH_WEST
+//            7 -> WEST
+//            else -> CALM
+//        }
+//    }
 }
 
-enum class DayTime {
+enum class DayTime(val value: Int) {
     @SerializedName("d")
-    DAY,           // светлое время суток
+    DAY(0),           // светлое время суток
 
     @SerializedName("n")
-    NIGHT;         // темное время суток
+    NIGHT(1);         // темное время суток
+
+    fun fromInt(value: Int): DayTime {
+        return if (value == 0) DAY else NIGHT
+    }
 }
 
 //

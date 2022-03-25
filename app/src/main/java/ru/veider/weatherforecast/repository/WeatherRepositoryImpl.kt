@@ -4,9 +4,9 @@ import retrofit2.Callback
 import ru.veider.weatherforecast.data.WeatherData
 
 
-class WeatherRepositoryImpl(private val weatherDataSource: WeatherDataSource) : WeatherRepository {
+class WeatherRepositoryImpl(private val weatherWebSource: WeatherWebSource) : WeatherRepository {
     override fun getWeatherFromSever(lat: Double, lon: Double, callback: Callback<WeatherData>) {
-        weatherDataSource.getWeather(lat, lon, callback)
+        weatherWebSource.getWeather(lat, lon, callback)
     }
 
 }

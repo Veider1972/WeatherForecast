@@ -14,7 +14,7 @@ import ru.veider.weatherforecast.data.WeatherData
 import ru.veider.weatherforecast.utils.TAG
 import java.io.IOException
 
-class WeatherDataSource {
+class WeatherWebSource {
 
     private val weatherAPI = Retrofit.Builder()
         .baseUrl("https://api.weather.yandex.ru/")
