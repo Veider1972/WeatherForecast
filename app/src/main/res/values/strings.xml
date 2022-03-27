@@ -31,4 +31,8 @@
     <string name="data_from_web">Данные из сети</string>
     <string name="data_from_cache">Данные из кэша</string>
     <string name="menu_title_history">История</string>
+    <string name="menu_title_map">Карты</string>
+    <string name="google_maps_key">AIzaSyBIN6nT5nOwWfPDGrpGIDrMke4SqzzGr0Q</string>
+    <string name="find_button_text">Найти</string>
+    <string name="empty_adress_message">Сначала необходимо ввести адрес</string>
 </resources>

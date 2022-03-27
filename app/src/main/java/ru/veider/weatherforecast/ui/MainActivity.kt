@@ -13,6 +13,7 @@ import ru.veider.weatherforecast.R
 import ru.veider.weatherforecast.databinding.MainActivityBinding
 import ru.veider.weatherforecast.ui.cities.CitiesFragment
 import ru.veider.weatherforecast.ui.history.HistoryFragment
+import ru.veider.weatherforecast.ui.map.MapFragment
 import ru.veider.weatherforecast.ui.utils.REQUEST_PERMISSION_LOCATION
 
 class MainActivity : AppCompatActivity() {
@@ -26,18 +27,14 @@ class MainActivity : AppCompatActivity() {
 
         binder = MainActivityBinding.inflate(layoutInflater)
         setContentView(binder.root)
-        savedInstanceState?.let {}
-                .run {
-                    supportFragmentManager.beginTransaction()
-                            .replace(R.id.container,
-                                     CitiesFragment.newInstance())
-                            .commitNow()
-                }
+        savedInstanceState?.let {}.run {
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, CitiesFragment.newInstance()).commitNow()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_screen_menu,
-                             menu)
+        menuInflater.inflate(R.menu.main_screen_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -45,10 +42,15 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.menu_history -> {
                 supportFragmentManager.beginTransaction()
-                        .replace(R.id.container,
-                                 HistoryFragment.newInstance())
-                        .addToBackStack("history")
-                        .commit()
+                        .replace(R.id.container, HistoryFragment.newInstance())
+                        .addToBackStack("history").commit()
+                true
+            }
+            R.id.menu_map -> {
+                supportFragmentManager.beginTransaction().replace(R.id.container,
+                                                                  MapFragment.newInstance(
+                                                                          CitiesFragment.newInstance().myWeatherQuery))
+                        .addToBackStack("map").commit()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -59,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this.applicationContext,
                                                   Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) true
-            else { // Show the permission request
+            else {
                 ActivityCompat.requestPermissions(this,
                                                   arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                                                   REQUEST_PERMISSION_LOCATION)
