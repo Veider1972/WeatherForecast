@@ -11,6 +11,7 @@
     </style>
     <style name="Weather.Now.Header.Coordinates" parent="Weather.Now.Header">
         <item name="android:textSize">@dimen/first_sunset_desc_size</item>
+        <item name="android:textColor">@color/desc_color</item>
     </style>
     <style name="Weather.Now.FirstLine" parent="Weather.Now">
         <item name="android:layout_height">wrap_content</item>
@@ -88,6 +89,15 @@
         <item name="android:textSize">@dimen/first_sunset_desc_size</item>
         <item name="android:textAlignment">textStart</item>
         <item name="android:textColor">@color/desc_color</item>
+    </style>
+    <style name="History.City" parent="Weather.Now">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:textSize">@dimen/history_city_name_size</item>
+    </style>
+    <style name="History.Temperature" parent="Weather.Now.FirstLine">
+        <item name="android:textSize">@dimen/history_temperature_size</item>
     </style>
 
 </resources>

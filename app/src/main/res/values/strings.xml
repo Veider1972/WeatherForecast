@@ -19,6 +19,7 @@
     <string name="longitude">Долгота=</string>
     <string name="coordinates">ш=%1$s, д=%2$s</string>
     <string name="select_a_place">Выберите город:</string>
+    <string name="history">История просмотров:</string>
     <string name="my_place">Моё место</string>
     <string name="coordinates_by_gps">Координаты определены по GPS</string>
     <string name="coordinates_by_network">Координаты определены по сети</string>
@@ -29,4 +30,5 @@
     <string name="no_answer">Сервер не отвечает</string>
     <string name="data_from_web">Данные из сети</string>
     <string name="data_from_cache">Данные из кэша</string>
+    <string name="menu_title_history">История</string>
 </resources>

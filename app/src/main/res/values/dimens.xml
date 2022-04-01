@@ -2,7 +2,7 @@
 <resources>
     <dimen name="header_size">40sp</dimen>
     <dimen name="second_text_size">25sp</dimen>
-    <dimen name="first_sunset_desc_size">13sp</dimen>
+    <dimen name="first_sunset_desc_size">15sp</dimen>
     <dimen name="first_sunset_time_size">18sp</dimen>
     <dimen name="first_temperature_size">35sp</dimen>
     <dimen name="second_numbers_size">25sp</dimen>
@@ -23,4 +23,10 @@
     <dimen name="forecast_dimension_left_margin">2sp</dimen>
     <dimen name="city_selection_name_size">25sp</dimen>
     <dimen name="city_selection_coordinates_size">13sp</dimen>
+    <dimen name="history_city_name_size">20sp</dimen>
+    <dimen name="history_temperature_size">25sp</dimen>
+    <dimen name="default_margin">5sp</dimen>
+    <dimen name="default_divider">15sp</dimen>
+    <dimen name="fab_icon_size">56dp</dimen>
+    <dimen name="history_temperature_width">40sp</dimen>
 </resources>
