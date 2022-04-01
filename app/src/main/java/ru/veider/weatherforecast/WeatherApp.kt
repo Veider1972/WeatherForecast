@@ -1,6 +1,7 @@
 package ru.veider.weatherforecast
 
 import android.app.Application
+import com.yandex.mapkit.MapKitFactory
 
 class WeatherApplication : Application() {
 
@@ -11,6 +12,7 @@ class WeatherApplication : Application() {
 
     override fun onCreate() {
         application = this
+        MapKitFactory.setApiKey(BuildConfig.YANDEX_MAPKIT_KEY);
         super.onCreate()
     }
 }

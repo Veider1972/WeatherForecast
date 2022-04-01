@@ -28,5 +28,6 @@
     <dimen name="default_margin">5sp</dimen>
     <dimen name="default_divider">15sp</dimen>
     <dimen name="fab_icon_size">56dp</dimen>
+    <dimen name="fab_map_icon_size">35dp</dimen>
     <dimen name="history_temperature_width">40sp</dimen>
 </resources>

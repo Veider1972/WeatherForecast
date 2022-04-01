@@ -31,8 +31,7 @@ import ru.veider.weatherforecast.ui.utils.showSnack
 import ru.veider.weatherforecast.ui.utils.showToast
 import ru.veider.weatherforecast.viewmodel.CitiesViewModel
 
-class CitiesFragment : Fragment(),
-                       CitiesAdapter.OnCitySelected {
+class CitiesFragment : Fragment(), CitiesAdapter.OnCitySelected {
 
     private var _binder: CitiesFragmentBinding? = null
     private val binder get() = _binder!!
@@ -42,10 +41,7 @@ class CitiesFragment : Fragment(),
     private val locationManager: LocationManager by lazy {
         requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
-    private var myWeatherQuery: WeatherQuery = WeatherQuery("",
-                                                            0.0,
-                                                            0.0,
-                                                            Language.RU)
+    public var myWeatherQuery: WeatherQuery = WeatherQuery("Москва", 55.755826, 37.617299900000035, Language.RU)
 
     companion object {
         @JvmStatic
@@ -62,12 +58,10 @@ class CitiesFragment : Fragment(),
             actionButton.setOnClickListener {
                 viewModel.dataLoading = if (viewModel.dataLoading == DataLoading.RUSSIAN) DataLoading.FOREIGN else DataLoading.RUSSIAN
                 GlobalScope.launch {
-                    PreferenceManager.getDefaultSharedPreferences(WeatherApplication.getInstance())
-                            .edit {
-                                putBoolean(CITIES_KEY,
-                                           if (viewModel.dataLoading == DataLoading.RUSSIAN) true else false)
-                                apply()
-                            }
+                    PreferenceManager.getDefaultSharedPreferences(WeatherApplication.getInstance()).edit {
+                        putBoolean(CITIES_KEY, if (viewModel.dataLoading == DataLoading.RUSSIAN) true else false)
+                        apply()
+                    }
                 }
                 viewModel.getCitiesFromRemoteSource()
             }
@@ -89,15 +83,12 @@ class CitiesFragment : Fragment(),
                 is CitiesLoadingState.Success -> {
                     loadingLayout.loadingLayout.visibility = View.GONE
                     citiesView.visibility = View.VISIBLE
-                    citiesRecyclerView.adapter = CitiesAdapter(citiesLoadingState.citiesData,
-                                                               this@CitiesFragment)
+                    citiesRecyclerView.adapter = CitiesAdapter(citiesLoadingState.citiesData, this@CitiesFragment)
                 }
                 is CitiesLoadingState.Error -> {
                     citiesView.visibility = View.GONE
                     loadingLayout.loadingLayout.visibility = View.GONE
-                    this@CitiesFragment.view?.showSnack(getString(R.string.error),
-                                                        getString(R.string.reload),
-                                                        { viewModel.getCitiesData() })
+                    this@CitiesFragment.view?.showSnack(getString(R.string.error), getString(R.string.reload), { viewModel.getCitiesData() })
                 }
                 is CitiesLoadingState.LoadingState -> {
                     citiesView.visibility = View.GONE
@@ -109,21 +100,13 @@ class CitiesFragment : Fragment(),
 
     override fun onResume() {
         super.onResume()
-        if (ActivityCompat.checkSelfPermission(this.requireContext(),
-                                               Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.requireContext(),
-                                                                                                                                                                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requireContext().showToast(getString(R.string.geolocation_permission))
             return
         }
         with(locationManager) {
-            requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                                   1000 * 2,
-                                   5000f,
-                                   locationListener)
-            requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                                   1000 * 2,
-                                   5000f,
-                                   locationListener)
+            requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 * 2, 5000f, locationListener)
+            requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 2, 5000f, locationListener)
         }
     }
 
@@ -136,10 +119,7 @@ class CitiesFragment : Fragment(),
     private val locationListener: LocationListener = object : LocationListener {
 
         override fun onLocationChanged(location: Location) {
-            myWeatherQuery = WeatherQuery(getString(R.string.my_place),
-                                          location.latitude,
-                                          location.longitude,
-                                          Language.valueOf(getString(R.string.default_location_language))).also {
+            myWeatherQuery = WeatherQuery(getString(R.string.my_place), location.latitude, location.longitude, Language.valueOf(getString(R.string.default_location_language))).also {
                 with(binder) {
                     myPlaceCity.text = it.name
                     myPlace.visibility = View.VISIBLE
@@ -180,18 +160,12 @@ class CitiesFragment : Fragment(),
     }
 
     override fun chooseCity(weatherQuery: WeatherQuery) {
-        val weatherFragment = WeatherFragment.newInstance()
-                .apply {
-                    arguments = Bundle().apply {
-                        putParcelable("weather",
-                                      weatherQuery)
-                    }
-                }
-        parentFragmentManager.beginTransaction()
-                .replace(R.id.container,
-                         weatherFragment)
-                .addToBackStack("weather")
-                .commit()
+        val weatherFragment = WeatherFragment.newInstance().apply {
+            arguments = Bundle().apply {
+                putParcelable("weather", weatherQuery)
+            }
+        }
+        parentFragmentManager.beginTransaction().replace(R.id.container, weatherFragment).addToBackStack("weather").commit()
     }
 }
 
