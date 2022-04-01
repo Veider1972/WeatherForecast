@@ -120,7 +120,7 @@ class CitiesFragment : Fragment(), CitiesAdapter.OnCitySelected {
 
         override fun onLocationChanged(location: Location) {
             myWeatherQuery = WeatherQuery(getString(R.string.my_place), location.latitude, location.longitude, Language.valueOf(getString(R.string.default_location_language))).also {
-                with(binder) {
+                _binder?.apply {
                     myPlaceCity.text = it.name
                     myPlace.visibility = View.VISIBLE
                 }

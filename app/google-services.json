@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "11575610246",
+    "project_id": "weatherforecast-9a58e",
+    "storage_bucket": "weatherforecast-9a58e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11575610246:android:7e009a605d9882f4fc3a07",
+        "android_client_info": {
+          "package_name": "ru.veider.weatherforecast"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "11575610246-g0610nnjb3ucb7eo9htg8cg23j6csq49.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4v3RSL6_kN_TvsuN04dg_uiqJGZ6bC5E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "11575610246-g0610nnjb3ucb7eo9htg8cg23j6csq49.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
