@@ -35,4 +35,9 @@
     <string name="google_maps_key">AIzaSyBIN6nT5nOwWfPDGrpGIDrMke4SqzzGr0Q</string>
     <string name="find_button_text">Найти</string>
     <string name="empty_adress_message">Сначала необходимо ввести адрес</string>
+    <string name="alarm_channel_name">Сообщения МЧС</string>
+    <string name="alarm_channel_description">Предупреждение о погодных аномалиях</string>
+    <string name="attention">Внимание</string>
+    <string name="attention_desc">Получено предупреждение</string>
+
 </resources>
