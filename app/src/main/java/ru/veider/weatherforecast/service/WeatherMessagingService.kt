@@ -53,7 +53,7 @@ class WeatherMessagingService : FirebaseMessagingService() {
             if (message.isNotEmpty()) setContentText(message)
             setStyle(NotificationCompat.BigTextStyle())
             setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
-            setVibrate(arrayOf(500L, 500L, 500L, 500L, 500L, 500L, 500L, 500L, 500L).toLongArray())
+            setVibrate(vibroPattern)
             setLights(Color.RED, 0, 1)
             setAutoCancel(true)
             color = Color.RED
@@ -79,8 +79,7 @@ class WeatherMessagingService : FirebaseMessagingService() {
                                                          ).apply {
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
                 enableVibration(true)
-                vibrationPattern =
-                    arrayOf(500L, 500L, 500L, 500L, 500L, 500L, 500L, 500L, 500L).toLongArray()
+                vibrationPattern = vibroPattern
                 enableLights(true)
                 lightColor = Color.WHITE
                 enableVibration(true)
