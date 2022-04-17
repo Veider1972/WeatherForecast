@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import ru.veider.weatherforecast.R
 import ru.veider.weatherforecast.databinding.HistoryFragmentBinding
@@ -19,11 +18,11 @@ class HistoryFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = HistoryFragment()
+        fun getInstance() = HistoryFragment()
     }
 
     private val viewModel: HistoryViewModel by lazy {
-        ViewModelProvider(this).get(HistoryViewModel::class.java)
+        ViewModelProvider(this)[HistoryViewModel::class.java]
     }
 
     private val adapter: HistoryAdapter by lazy {
@@ -31,26 +30,17 @@ class HistoryFragment : Fragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?,
-                             ): View {
-        _binding = HistoryFragmentBinding.inflate(inflater,
-                                                  container,
-                                                  false)
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = HistoryFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(
-            view: View,
-            savedInstanceState: Bundle?,
-                              ) {
-        super.onViewCreated(view,
-                            savedInstanceState)
+        view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.historyRecyclerView.adapter = adapter
-        viewModel.historyLiveData.observe(viewLifecycleOwner,
-                                          Observer { renderData(it) })
+        viewModel.historyLiveData.observe(viewLifecycleOwner) { renderData(it) }
         viewModel.getAllHistory()
     }
 
@@ -77,9 +67,7 @@ class HistoryFragment : Fragment() {
 
                     historyRecyclerView.showSnack(getString(R.string.error),
                                                   getString(R.string.reload),
-                                                  {
-                                                      viewModel.getAllHistory()
-                                                  })
+                                                  { viewModel.getAllHistory() })
                 }
             }
         }
@@ -89,4 +77,5 @@ class HistoryFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }

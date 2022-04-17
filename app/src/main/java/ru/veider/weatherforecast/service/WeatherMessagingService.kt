@@ -14,16 +14,13 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import ru.veider.weatherforecast.R
-import ru.veider.weatherforecast.ui.MainActivity
 import ru.veider.weatherforecast.utils.*
 
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class WeatherMessagingService : FirebaseMessagingService() {
 
-
     override fun onMessageReceived(message: RemoteMessage) {
-        val title = message.notification
         val messageData = message.data
         if (messageData.isNotEmpty()) handleMessageData(messageData.toMap())
     }
@@ -75,8 +72,7 @@ class WeatherMessagingService : FirebaseMessagingService() {
             val notificationChannel = NotificationChannel(
                 CHANNEL_ID,
                 resources.getString(R.string.alarm_channel_name),
-                NotificationManager.IMPORTANCE_HIGH
-                                                         ).apply {
+                NotificationManager.IMPORTANCE_HIGH).apply {
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
                 enableVibration(true)
                 vibrationPattern = vibroPattern
@@ -87,5 +83,4 @@ class WeatherMessagingService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(notificationChannel)
         }
     }
-
 }

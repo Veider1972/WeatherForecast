@@ -9,29 +9,19 @@ import ru.veider.weatherforecast.repository.weather.WeatherQuery
 import ru.veider.weatherforecast.databinding.CityItemBinding
 
 class CitiesAdapter(
-        private var cities: Array<WeatherQuery>,
-        var onCitySelected: OnCitySelected,
-                   ) : RecyclerView.Adapter<CitiesAdapter.CityHolder>() {
+    private var cities: Array<WeatherQuery>, var onCitySelected: OnCitySelected) :
+    RecyclerView.Adapter<CitiesAdapter.CityHolder>() {
 
-    override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int,
-                                   ): CityHolder {
-        val binder = CityItemBinding.inflate(LayoutInflater.from(parent.context),
-                                             parent,
-                                             false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityHolder {
+        val binder = CityItemBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false)
         return CityHolder(binder.root)
     }
 
     override fun onBindViewHolder(
-            holder: CityHolder,
-            position: Int,
-                                 ) {
+        holder: CityHolder, position: Int) {
         holder.onBind(cities[position].apply {
-            WeatherQuery(name,
-                         latitude,
-                         longitude,
-                         Language.RU)
+            WeatherQuery(name, latitude, longitude, Language.RU)
         })
     }
 
