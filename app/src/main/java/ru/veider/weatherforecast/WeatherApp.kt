@@ -12,7 +12,7 @@ class WeatherApplication : Application() {
 
     override fun onCreate() {
         application = this
-        MapKitFactory.setApiKey(BuildConfig.YANDEX_MAPKIT_KEY);
+        MapKitFactory.setApiKey(BuildConfig.YANDEX_MAPKIT_KEY)
         super.onCreate()
     }
 }

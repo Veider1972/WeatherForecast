@@ -25,10 +25,8 @@ import ru.veider.weatherforecast.databinding.CitiesFragmentBinding
 import ru.veider.weatherforecast.ui.weather.WeatherFragment
 import ru.veider.weatherforecast.repository.cities.CitiesLoadingState
 import ru.veider.weatherforecast.WeatherApplication
-import ru.veider.weatherforecast.repository.CITIES_KEY
-import ru.veider.weatherforecast.ui.utils.REQUEST_PERMISSION_LOCATION
-import ru.veider.weatherforecast.ui.utils.showSnack
-import ru.veider.weatherforecast.ui.utils.showToast
+import ru.veider.weatherforecast.ui.utils.*
+import ru.veider.weatherforecast.utils.*
 import ru.veider.weatherforecast.viewmodel.CitiesViewModel
 
 class CitiesFragment : Fragment(), CitiesAdapter.OnCitySelected {
@@ -41,31 +39,34 @@ class CitiesFragment : Fragment(), CitiesAdapter.OnCitySelected {
     private val locationManager: LocationManager by lazy {
         requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
-    public var myWeatherQuery: WeatherQuery = WeatherQuery("Москва", 55.755826, 37.617299900000035, Language.RU)
+    var myWeatherQuery: WeatherQuery =
+        WeatherQuery("Москва", 55.755826, 37.617299900000035, Language.RU)
 
     companion object {
         @JvmStatic
-        fun newInstance() = CitiesFragment()
+        fun getInstance() = CitiesFragment()
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?,
-                             ): View {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binder = CitiesFragmentBinding.inflate(inflater)
         with(binder) {
             actionButton.setOnClickListener {
-                viewModel.dataLoading = if (viewModel.dataLoading == DataLoading.RUSSIAN) DataLoading.FOREIGN else DataLoading.RUSSIAN
+                viewModel.dataLoading =
+                    if (viewModel.dataLoading == DataLoading.RUSSIAN) DataLoading.FOREIGN else DataLoading.RUSSIAN
                 GlobalScope.launch {
-                    PreferenceManager.getDefaultSharedPreferences(WeatherApplication.getInstance()).edit {
-                        putBoolean(CITIES_KEY, if (viewModel.dataLoading == DataLoading.RUSSIAN) true else false)
-                        apply()
-                    }
+                    PreferenceManager.getDefaultSharedPreferences(WeatherApplication.getInstance())
+                        .edit {
+                            putBoolean(
+                                CITIES_KEY, viewModel.dataLoading == DataLoading.RUSSIAN)
+                            apply()
+                        }
                 }
                 viewModel.getCitiesFromRemoteSource()
             }
-            myPlace.setOnClickListener { chooseCity(myWeatherQuery) }
+            myPlace.setOnClickListener {
+                chooseCity(myWeatherQuery)
+            }
         }
         with(viewModel) {
             getCitiesData().observe(this@CitiesFragment.viewLifecycleOwner) { getCitiesData(it) }
@@ -83,12 +84,16 @@ class CitiesFragment : Fragment(), CitiesAdapter.OnCitySelected {
                 is CitiesLoadingState.Success -> {
                     loadingLayout.loadingLayout.visibility = View.GONE
                     citiesView.visibility = View.VISIBLE
-                    citiesRecyclerView.adapter = CitiesAdapter(citiesLoadingState.citiesData, this@CitiesFragment)
+                    citiesRecyclerView.adapter =
+                        CitiesAdapter(citiesLoadingState.citiesData, this@CitiesFragment)
                 }
                 is CitiesLoadingState.Error -> {
                     citiesView.visibility = View.GONE
                     loadingLayout.loadingLayout.visibility = View.GONE
-                    this@CitiesFragment.view?.showSnack(getString(R.string.error), getString(R.string.reload), { viewModel.getCitiesData() })
+                    this@CitiesFragment.view?.showSnack(
+                        getString(R.string.error),
+                        getString(R.string.reload),
+                        { viewModel.getCitiesData() })
                 }
                 is CitiesLoadingState.LoadingState -> {
                     citiesView.visibility = View.GONE
@@ -100,13 +105,18 @@ class CitiesFragment : Fragment(), CitiesAdapter.OnCitySelected {
 
     override fun onResume() {
         super.onResume()
-        if (ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requireContext().showToast(getString(R.string.geolocation_permission))
             return
         }
         with(locationManager) {
             requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 * 2, 5000f, locationListener)
-            requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 2, 5000f, locationListener)
+            requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, 1000 * 2, 5000f, locationListener)
         }
     }
 
@@ -119,7 +129,11 @@ class CitiesFragment : Fragment(), CitiesAdapter.OnCitySelected {
     private val locationListener: LocationListener = object : LocationListener {
 
         override fun onLocationChanged(location: Location) {
-            myWeatherQuery = WeatherQuery(getString(R.string.my_place), location.latitude, location.longitude, Language.valueOf(getString(R.string.default_location_language))).also {
+            myWeatherQuery = WeatherQuery(
+                getString(R.string.my_place),
+                location.latitude,
+                location.longitude,
+                Language.valueOf(getString(R.string.default_location_language))).also {
                 _binder?.apply {
                     myPlaceCity.text = it.name
                     myPlace.visibility = View.VISIBLE
@@ -135,11 +149,7 @@ class CitiesFragment : Fragment(), CitiesAdapter.OnCitySelected {
             binder.myPlace.visibility = View.VISIBLE
         }
 
-        override fun onStatusChanged(
-                provider: String,
-                status: Int,
-                extras: Bundle,
-                                    ) {
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
             when (provider) {
                 LocationManager.GPS_PROVIDER -> requireContext().showToast(getString(R.string.coordinates_by_gps))
                 LocationManager.NETWORK_PROVIDER -> requireContext().showToast(getString(R.string.coordinates_by_network))
@@ -148,10 +158,7 @@ class CitiesFragment : Fragment(), CitiesAdapter.OnCitySelected {
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray,
-                                           ) {
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == REQUEST_PERMISSION_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 requireContext().showToast(getString(R.string.permission_granted))
@@ -160,12 +167,13 @@ class CitiesFragment : Fragment(), CitiesAdapter.OnCitySelected {
     }
 
     override fun chooseCity(weatherQuery: WeatherQuery) {
-        val weatherFragment = WeatherFragment.newInstance().apply {
+        val weatherFragment = WeatherFragment.getInstance().apply {
             arguments = Bundle().apply {
                 putParcelable("weather", weatherQuery)
             }
         }
-        parentFragmentManager.beginTransaction().replace(R.id.container, weatherFragment).addToBackStack("weather").commit()
+        parentFragmentManager.beginTransaction().replace(R.id.container, weatherFragment)
+            .addToBackStack("weather").commit()
     }
 }
 
