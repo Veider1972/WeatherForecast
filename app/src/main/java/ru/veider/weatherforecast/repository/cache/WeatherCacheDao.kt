@@ -12,18 +12,10 @@ interface WeatherCacheDao {
     fun cleanCache(datatime: Long)
 
     @Query("SELECT * FROM WeatherEntity WHERE latitude = :latitude AND longitude = :longitude AND now_time > :datatime")
-    fun getCache(
-            latitude: Double,
-            longitude: Double,
-            datatime: Long,
-                ): List<WeatherEntity>
+    fun getCache(latitude: Double, longitude: Double, datatime: Long): List<WeatherEntity>
 
     @Query("SELECT COUNT(*) FROM WeatherEntity WHERE latitude = :latitude AND longitude = :longitude AND now_time > :datatime")
-    fun checkCache(
-            latitude: Double,
-            longitude: Double,
-            datatime: Long,
-                  ): Int
+    fun checkCache(latitude: Double, longitude: Double, datatime: Long): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addCache(weatherEntity: WeatherEntity)

@@ -20,7 +20,6 @@ import ru.veider.weatherforecast.repository.weather.WeatherQuery
 import ru.veider.weatherforecast.ui.cities.CitiesFragment
 import ru.veider.weatherforecast.ui.history.HistoryFragment
 import ru.veider.weatherforecast.ui.map.MapFragment
-import ru.veider.weatherforecast.ui.utils.REQUEST_PERMISSION_LOCATION
 import ru.veider.weatherforecast.ui.weather.WeatherFragment
 import ru.veider.weatherforecast.utils.*
 import android.content.BroadcastReceiver as BroadcastReceiver
@@ -41,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binder.root)
         savedInstanceState?.let {}.run {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, CitiesFragment.newInstance()).commitNow()
+                .replace(R.id.container, CitiesFragment.getInstance()).commitNow()
         }
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(broadcastReceiver, IntentFilter(BROADCAST_ACTION))
@@ -61,16 +60,14 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.menu_history -> {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, HistoryFragment.newInstance())
+                    .replace(R.id.container, HistoryFragment.getInstance())
                     .addToBackStack("history").commit()
                 true
             }
             R.id.menu_map -> {
                 supportFragmentManager.beginTransaction().replace(
                     R.id.container, MapFragment.newInstance(
-                        CitiesFragment.newInstance().myWeatherQuery
-                                                           )
-                                                                 ).addToBackStack("map").commit()
+                        CitiesFragment.getInstance().myWeatherQuery)).addToBackStack("map").commit()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -80,15 +77,13 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissionForLocation(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(
-                    this.applicationContext, Manifest.permission.ACCESS_FINE_LOCATION
-                                                 ) == PackageManager.PERMISSION_GRANTED
-            ) true
+                    this.applicationContext,
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) true
             else {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    REQUEST_PERMISSION_LOCATION
-                                                 )
+                    REQUEST_PERMISSION_LOCATION)
                 false
             }
         } else true
@@ -100,12 +95,11 @@ class MainActivity : AppCompatActivity() {
                 intent?.getStringExtra(MESSAGE) ?: resources.getString(R.string.attention)
             val latitude: Double = intent?.getDoubleExtra(LATITUDE, 1000.0) ?: 1000.0
             val longitude: Double = intent?.getDoubleExtra(LONGITUDE, 1000.0) ?: 1000.0
-            val weatherFragment = WeatherFragment.newInstance().apply {
+            val weatherFragment = WeatherFragment.getInstance().apply {
                 if (latitude != 1000.0 && longitude != 1000.0) {
                     arguments = Bundle().apply {
                         putParcelable(
-                            "weather", WeatherQuery(message, latitude, longitude, Language.RU)
-                                     )
+                            "weather", WeatherQuery(message, latitude, longitude, Language.RU))
                     }
                 }
             }

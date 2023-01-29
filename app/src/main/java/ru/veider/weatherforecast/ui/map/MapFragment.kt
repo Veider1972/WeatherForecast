@@ -32,16 +32,18 @@ class MapFragment(private val startPoint: WeatherQuery) : Fragment() {
         override fun onMapTap(map: Map, point: Point) {
             when (mapMode) {
                 MapMode.PIN -> {
-                    map.mapObjects.addPlacemark(point, ImageProvider.fromResource(requireContext(),
-                                                                                  R.drawable.map_pin))
+                    map.mapObjects.addPlacemark(
+                        point, ImageProvider.fromResource(
+                            requireContext(), R.drawable.map_pin))
                 }
                 MapMode.ROUTE -> {
                     lastPoint?.let {
                         map.mapObjects.addPolyline(Polyline(arrayListOf(lastPoint, point)))
                     }
                     lastPoint = point
-                    map.mapObjects.addPlacemark(point, ImageProvider.fromResource(requireContext(),
-                                                                                  R.drawable.map_marker))
+                    map.mapObjects.addPlacemark(
+                        point, ImageProvider.fromResource(
+                            requireContext(), R.drawable.map_marker))
                 }
             }
         }
@@ -61,17 +63,20 @@ class MapFragment(private val startPoint: WeatherQuery) : Fragment() {
 
     @SuppressLint("UseCompatLoadingForColorStateLists")
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
                              ): View {
         _binder = MapFragmentBinding.inflate(inflater)
         with(binder) {
             yandexMap.apply {
                 map.apply {
                     addInputListener(inputListener)
-                    move(CameraPosition(Point(startPoint.latitude, startPoint.longitude), 11.0f,
-                                        0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 0.0f), null)
+                    move(
+                        CameraPosition(
+                            Point(startPoint.latitude, startPoint.longitude), 11.0f, 0.0f, 0.0f),
+                        Animation(Animation.Type.SMOOTH, 0.0f),
+                        null)
                 }
             }
 
@@ -83,20 +88,22 @@ class MapFragment(private val startPoint: WeatherQuery) : Fragment() {
                     val geoCoder = Geocoder(requireContext())
                     val seekPoints = geoCoder.getFromLocationName(searchString, 1)
                     yandexMap.map.move(
-                            CameraPosition(Point(seekPoints[0].latitude, seekPoints[0].longitude),
-                                           17.0f, 0.0f, 0.0f),
-                            Animation(Animation.Type.SMOOTH, 0.0f), null)
+                        CameraPosition(
+                            Point(seekPoints[0].latitude, seekPoints[0].longitude),
+                            17.0f,
+                            0.0f,
+                            0.0f), Animation(Animation.Type.SMOOTH, 0.0f), null)
                 }
             }
             zoomInButton.setOnClickListener {
                 val camera = yandexMap.map.cameraPosition
                 yandexMap.map.move(
-                        CameraPosition(camera.target, camera.zoom + 1, camera.azimuth, camera.tilt))
+                    CameraPosition(camera.target, camera.zoom + 1, camera.azimuth, camera.tilt))
             }
             zoomOutButton.setOnClickListener {
                 val camera = yandexMap.map.cameraPosition
                 yandexMap.map.move(
-                        CameraPosition(camera.target, camera.zoom - 1, camera.azimuth, camera.tilt))
+                    CameraPosition(camera.target, camera.zoom - 1, camera.azimuth, camera.tilt))
             }
             moveButton.apply {
                 backgroundTintList = resources.getColorStateList(R.color.selected)

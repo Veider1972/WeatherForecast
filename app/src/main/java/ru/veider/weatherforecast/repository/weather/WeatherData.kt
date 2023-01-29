@@ -4,14 +4,10 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
-
 @Parcelize
 data class WeatherQuery(
-        var name: String,
-        var latitude: Double,
-        var longitude: Double,
-        var language: Language,
-                       ) : Parcelable
+    var name: String, var latitude: Double, var longitude: Double, var language: Language) :
+    Parcelable
 
 @Parcelize
 enum class Language(val str: String) : Parcelable {
@@ -29,142 +25,73 @@ enum class DataLoading {
 }
 
 fun getRussianCities(): Array<WeatherQuery> {
-    return arrayOf(WeatherQuery("Москва",
-                                55.755826,
-                                37.617299900000035,
-                                Language.RU),
-                   WeatherQuery("Санкт-Петербург",
-                                59.9342802,
-                                30.335098600000038,
-                                Language.RU),
-                   WeatherQuery("Новосибирск",
-                                55.00835259999999,
-                                82.93573270000002,
-                                Language.RU),
-                   WeatherQuery("Екатеринбург",
-                                56.83892609999999,
-                                60.60570250000001,
-                                Language.RU),
-                   WeatherQuery("Нижний Новгород",
-                                56.2965039,
-                                43.936059,
-                                Language.RU),
-                   WeatherQuery("Казань",
-                                55.8304307,
-                                49.06608060000008,
-                                Language.RU),
-                   WeatherQuery("Челябинск",
-                                55.1644419,
-                                61.4368432,
-                                Language.RU),
-                   WeatherQuery("Омск",
-                                54.9884804,
-                                73.32423610000001,
-                                Language.RU),
-                   WeatherQuery("Ростов-на-Дону",
-                                47.2357137,
-                                39.701505,
-                                Language.RU),
-                   WeatherQuery("Уфа",
-                                54.7387621,
-                                55.972055400000045,
-                                Language.RU))
+    return arrayOf(
+        WeatherQuery(
+            "Москва", 55.755826, 37.617299900000035, Language.RU), WeatherQuery(
+            "Санкт-Петербург", 59.9342802, 30.335098600000038, Language.RU), WeatherQuery(
+            "Новосибирск", 55.00835259999999, 82.93573270000002, Language.RU), WeatherQuery(
+            "Екатеринбург", 56.83892609999999, 60.60570250000001, Language.RU), WeatherQuery(
+            "Нижний Новгород", 56.2965039, 43.936059, Language.RU), WeatherQuery(
+            "Казань", 55.8304307, 49.06608060000008, Language.RU), WeatherQuery(
+            "Челябинск", 55.1644419, 61.4368432, Language.RU), WeatherQuery(
+            "Омск", 54.9884804, 73.32423610000001, Language.RU), WeatherQuery(
+            "Ростов-на-Дону", 47.2357137, 39.701505, Language.RU), WeatherQuery(
+            "Уфа", 54.7387621, 55.972055400000045, Language.RU))
 }
 
 fun getForeignCities(): Array<WeatherQuery> {
-    return arrayOf(WeatherQuery("Лондон",
-                                51.5085300,
-                                -0.1257400,
-                                Language.RU),
-                   WeatherQuery("Токио",
-                                35.6895000,
-                                139.6917100,
-                                Language.RU),
-                   WeatherQuery("Париж",
-                                48.8534100,
-                                2.3488000,
-                                Language.RU),
-                   WeatherQuery("Берлин",
-                                52.52000659999999,
-                                13.404953999999975,
-                                Language.RU),
-                   WeatherQuery("Рим",
-                                41.9027835,
-                                12.496365500000024,
-                                Language.RU),
-                   WeatherQuery("Минск",
-                                53.90453979999999,
-                                27.561524400000053,
-                                Language.RU),
-                   WeatherQuery("Стамбул",
-                                41.0082376,
-                                28.97835889999999,
-                                Language.RU),
-                   WeatherQuery("Вашингтон",
-                                38.9071923,
-                                -77.03687070000001,
-                                Language.RU),
-                   WeatherQuery("Киев",
-                                50.4501,
-                                30.523400000000038,
-                                Language.RU),
-                   WeatherQuery("Пекин",
-                                39.90419989999999,
-                                116.40739630000007,
-                                Language.RU))
+    return arrayOf(
+        WeatherQuery(
+            "Лондон", 51.5085300, -0.1257400, Language.RU), WeatherQuery(
+            "Токио", 35.6895000, 139.6917100, Language.RU), WeatherQuery(
+            "Париж", 48.8534100, 2.3488000, Language.RU), WeatherQuery(
+            "Берлин", 52.52000659999999, 13.404953999999975, Language.RU), WeatherQuery(
+            "Рим", 41.9027835, 12.496365500000024, Language.RU), WeatherQuery(
+            "Минск", 53.90453979999999, 27.561524400000053, Language.RU), WeatherQuery(
+            "Стамбул", 41.0082376, 28.97835889999999, Language.RU), WeatherQuery(
+            "Вашингтон", 38.9071923, -77.03687070000001, Language.RU), WeatherQuery(
+            "Киев", 50.4501, 30.523400000000038, Language.RU), WeatherQuery(
+            "Пекин", 39.90419989999999, 116.40739630000007, Language.RU))
 }
 
-
 data class WeatherData(
-        @SerializedName("now") val now: Long,                     // Время сервера в формате Unixtime. Число
-        @SerializedName("info") val info: Info,                   // Объект информации о населенном пункте. Объект
-        @SerializedName("geo_object") val geo_object: GeoObject,  // Местоположение
-        @SerializedName("fact") val fact: Fact,                   // Объект фактической информации о погоде. Объект
-                      )
+    @SerializedName("now") val now: Long,                     // Время сервера в формате Unixtime. Число
+    @SerializedName("info") val info: Info,                   // Объект информации о населенном пункте. Объект
+    @SerializedName("geo_object") val geo_object: GeoObject,  // Местоположение
+    @SerializedName("fact") val fact: Fact)                   // Объект фактической информации о погоде. Объект
 
 data class Info(
-        @SerializedName("lat") val latitude: Double,    // Широта (в градусах). Число
-        @SerializedName("lon") val longitude: Double,   // Долгота (в градусах). Число
-               )
+    @SerializedName("lat") val latitude: Double,    // Широта (в градусах). Число
+    @SerializedName("lon") val longitude: Double)   // Долгота (в градусах). Число
 
 data class GeoObject(
-        @SerializedName("district") val district: District?,    // Район
-        @SerializedName("locality") val locality: Locality?,    // Область
-        @SerializedName("province") val province: Province,    // Субьект
-        @SerializedName("country") val country: Country,        // Страна
-                    )
+    @SerializedName("district") val district: District?,    // Район
+    @SerializedName("locality") val locality: Locality?,    // Область
+    @SerializedName("province") val province: Province,     // Субьект
+    @SerializedName("country") val country: Country)        // Страна
 
 data class District(
-        val id: Int?,
-        val name: String?,
-                   )
+    val id: Int?, val name: String?)
 
 data class Locality(
-        val id: Int?,
-        val name: String?,
-                   )
+    val id: Int?, val name: String?)
 
 data class Province(
-        val id: Int,
-        val name: String,
-                   )
+    val id: Int, val name: String)
 
 data class Country(
-        val id: Int,
-        val name: String,
-                  )
+    val id: Int, val name: String)
 
 data class Fact(
-        @SerializedName("temp") val temp: Int,                 // Температура (°C)
-        @SerializedName("feels_like") val feels_like: Int,     // Ощущаемая температура (°C)
-        @SerializedName("temp_water") val temp_water: Int?,     // Температура воды (°C). Параметр возвращается для там, где данная информация актуальна
-        @SerializedName("condition") val condition: Condition, // Код расшифровки погодного описания
-        @SerializedName("wind_speed") val wind_speed: Double,  // Скорость ветра (в м/с). Число
-        @SerializedName("wind_dir") val wind_dir: WindDir,     // Направление ветра.
-        @SerializedName("pressure_mm") val pressure_mm: Int,   // Давление (в мм рт.ст.). Число
-        @SerializedName("humidity") val humidity: Int,         // Влажность воздуха (в процентах). Число
-        @SerializedName("daytime") val daytime: DayTime,       // Светлое или темное время суток.
-               )
+    @SerializedName("temp") val temp: Int,                 // Температура (°C)
+    @SerializedName("feels_like") val feels_like: Int,     // Ощущаемая температура (°C)
+    @SerializedName("temp_water") val temp_water: Int?,    // Температура воды (°C). Параметр возвращается для там, где данная информация актуальна
+    @SerializedName("condition") val condition: Condition, // Код расшифровки погодного описания
+    @SerializedName("wind_speed") val wind_speed: Double,  // Скорость ветра (в м/с). Число
+    @SerializedName("wind_dir") val wind_dir: WindDir,     // Направление ветра.
+    @SerializedName("pressure_mm") val pressure_mm: Int,   // Давление (в мм рт.ст.). Число
+    @SerializedName("humidity") val humidity: Int,         // Влажность воздуха (в процентах). Число
+    @SerializedName("daytime") val daytime: DayTime)       // Светлое или темное время суток.
 
 enum class Condition(val value: Int) {
     @SerializedName("clear")
@@ -406,17 +333,7 @@ enum class WindDir(val value: Int) {
         override fun getDirection() = "direction_calm"
     };
 
-    abstract fun getDirection(): String //    fun fromInt(value: Int): WindDir { //        return when (value) { //            0 -> NORD_WEST
-    //            1 -> NORD
-    //            2 -> NORD_EAST
-    //            3 -> EAST
-    //            4 -> SOUTH_EAST
-    //            5 -> SOUTH
-    //            6 -> SOUTH_WEST
-    //            7 -> WEST
-    //            else -> CALM
-    //        }
-    //    }
+    abstract fun getDirection(): String
 }
 
 enum class DayTime(val value: Int) {
@@ -424,7 +341,7 @@ enum class DayTime(val value: Int) {
     DAY(0),           // светлое время суток
 
     @SerializedName("n")
-    NIGHT(1);         // темное время суток
+    NIGHT(1)         // темное время суток
 }
 
 //

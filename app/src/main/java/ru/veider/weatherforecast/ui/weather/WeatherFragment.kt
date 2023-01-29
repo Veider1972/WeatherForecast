@@ -9,30 +9,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
-import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKit
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.runtime.image.ImageProvider
 import kotlinx.android.synthetic.main.weather_fragment.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import ru.veider.weatherforecast.BuildConfig
+import kotlinx.coroutines.DelicateCoroutinesApi
 import ru.veider.weatherforecast.R
 import ru.veider.weatherforecast.databinding.WeatherFragmentBinding
-import ru.veider.weatherforecast.repository.history.HistoryRepositoryImpl
 import ru.veider.weatherforecast.repository.weather.WeatherData
 import ru.veider.weatherforecast.repository.weather.WeatherLoadingState
 import ru.veider.weatherforecast.repository.weather.WeatherQuery
 import ru.veider.weatherforecast.ui.utils.showSnack
 import ru.veider.weatherforecast.ui.utils.toLatString
 import ru.veider.weatherforecast.ui.utils.toLonString
+import ru.veider.weatherforecast.viewmodel.HistoryViewModel
 import ru.veider.weatherforecast.viewmodel.WeatherViewModel
-import java.util.*
 
 
 class WeatherFragment : Fragment() {
@@ -41,14 +36,17 @@ class WeatherFragment : Fragment() {
     private val binder get() = _binder!!
     private val handle = Handler(Looper.getMainLooper())
     private lateinit var weatherQuery: WeatherQuery
-    private val weatherViewModel: WeatherViewModel by lazy {
-        ViewModelProvider(this)[WeatherViewModel::class.java]
-    }
+    @DelicateCoroutinesApi
+    private val weatherViewModel : WeatherViewModel by lazy {
+        ViewModelProvider(this)[WeatherViewModel::class.java]}
+    private val historyViewModel : HistoryViewModel by lazy {
+        ViewModelProvider(this)[HistoryViewModel::class.java]}
+
     private var yandexMap: MapKit? = null
 
     companion object {
         @JvmStatic
-        fun newInstance() = WeatherFragment()
+        fun getInstance() = WeatherFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,17 +56,14 @@ class WeatherFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?,
-                             ): View {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         arguments?.let {
             val bundle = arguments
             weatherQuery = bundle?.getParcelable<WeatherQuery>("weather") as WeatherQuery
         }
         _binder = WeatherFragmentBinding.inflate(inflater)
-        weatherViewModel.weatherLiveData.observe(viewLifecycleOwner,
-                                                 Observer { setWeatherMode(it) })
+
+        weatherViewModel.weatherLiveData.observe(viewLifecycleOwner) { setWeatherMode(it) }
         weatherViewModel.getWeatherFromRemoteSource(weatherQuery.latitude, weatherQuery.longitude)
         return binder.root
     }
@@ -87,6 +82,7 @@ class WeatherFragment : Fragment() {
 
     }
 
+    @DelicateCoroutinesApi
     @RequiresApi(Build.VERSION_CODES.N)
     private fun setWeatherMode(weatherLoadingState: WeatherLoadingState) {
         handle.post {
@@ -100,12 +96,12 @@ class WeatherFragment : Fragment() {
                     is WeatherLoadingState.Error -> {
                         weatherView.visibility = View.GONE
                         loadingLayout.loadingLayout.visibility = View.GONE
-                        weatherView.showSnack(
-                                getString(R.string.error) + ": " + weatherLoadingState.error,
-                                getString(R.string.reload), {
-                                    weatherViewModel.getWeatherFromRemoteSource(
-                                            weatherQuery.latitude, weatherQuery.longitude)
-                                })
+                        weatherView.showSnack(getString(R.string.error) + ": " + weatherLoadingState.error,
+                                              getString(R.string.reload),
+                                              {
+                                                  weatherViewModel.getWeatherFromRemoteSource(
+                                                      weatherQuery.latitude, weatherQuery.longitude)
+                                              })
                     }
                     is WeatherLoadingState.Loading -> {
                         weatherView.visibility = View.GONE
@@ -124,20 +120,21 @@ class WeatherFragment : Fragment() {
     private fun setData(weatherData: WeatherData) {
         with(binder) {
             with(weatherData) {
-                GlobalScope.launch {
-                    HistoryRepositoryImpl().addHistory(weatherData)
-                }
+                historyViewModel.addHistory(weatherData)
                 Picasso.get().load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
-                        .into(background)
-                cityName.text = weatherData.geo_object.locality?.name
-                        ?: weatherData.geo_object.province.name
-                cityCoordinates.text = String.format(getString(R.string.coordinates),
-                                                     weatherData.info.latitude.toLatString(),
-                                                     weatherData.info.longitude.toLonString())
+                    .into(background)
+                cityName.text =
+                    weatherData.geo_object.locality?.name ?: weatherData.geo_object.province.name
+                cityCoordinates.text = String.format(
+                    getString(R.string.coordinates),
+                    weatherData.info.latitude.toLatString(),
+                    weatherData.info.longitude.toLonString())
 
                 conditions.setImageResource(
-                        resources.getIdentifier(fact.condition.getIcon(fact.daytime), "drawable",
-                                                requireActivity().packageName))
+                    resources.getIdentifier(
+                        fact.condition.getIcon(fact.daytime),
+                        "drawable",
+                        requireActivity().packageName))
                 temp.text = fact.temp.toString()
                 temperatureFeels.text = fact.feels_like.toString()
                 windSpeed.text = fact.wind_speed.toString()
@@ -152,13 +149,14 @@ class WeatherFragment : Fragment() {
                 }
 
                 windDirection.setImageResource(
-                        resources.getIdentifier(fact.wind_dir.getDirection(), "drawable",
-                                                requireActivity().packageName))
+                    resources.getIdentifier(
+                        fact.wind_dir.getDirection(), "drawable", requireActivity().packageName))
                 yandexMap.map.apply {
                     val point = Point(weatherData.info.latitude, weatherData.info.longitude)
                     move(CameraPosition(point, 12.0f, 0.0f, 0.0f))
-                    mapObjects.addPlacemark(point, ImageProvider.fromResource(requireContext(),
-                                                                              R.drawable.map_pin))
+                    mapObjects.addPlacemark(
+                        point, ImageProvider.fromResource(
+                            requireContext(), R.drawable.map_pin))
                 }
             }
         }
